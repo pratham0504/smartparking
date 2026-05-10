@@ -69,14 +69,26 @@ const allowedOrigins = process.env.CORS_ALLOWED_ORIGINS
 
 console.log("Allowed CORS origins:", allowedOrigins);
 
+function isTrustedPreviewOrigin(origin) {
+  try {
+    const parsed = new URL(origin);
+    return (
+      parsed.protocol === 'https:' &&
+      parsed.hostname.endsWith('.vercel.app')
+    );
+  } catch {
+    return false;
+  }
+}
+
 const corsOptions = {
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps, curl requests)
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1 || isTrustedPreviewOrigin(origin)) {
       callback(null, true);
     } else {
       console.log(`CORS blocked origin: ${origin}`);
-      callback(new Error("Not allowed by CORS"));
+      callback(null, false);
     }
   },
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
