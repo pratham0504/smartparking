@@ -1,10 +1,20 @@
-// 1. Unified Port Definition for Render/Local
-const PORT = process.env.PORT || 10000; 
+// ⚠️ IMPORTANT: Load environment variables FIRST, before anything else
+// This must happen before any other code reads process.env
+const path = require("path");
+const fs = require("fs");
+const envLocalPath = path.join(__dirname, ".env.local");
+if (fs.existsSync(envLocalPath)) {
+  console.log("✅ Loading .env.local for local development");
+  require("dotenv").config({ path: envLocalPath });
+} else {
+  console.log("ℹ️  No .env.local found, using .env");
+  require("dotenv").config();
+}
 
+const PORT = process.env.PORT || 10000;
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const app = express();
-
 // Protection contre le fingerprinting - désactiver l'en-tête X-Powered-By
 app.disable('x-powered-by');
 
@@ -25,6 +35,8 @@ app.use(helmet({
   referrerPolicy: { policy: 'strict-origin-when-cross-origin' }
 }));
 
+// Use process.env.PORT provided by Heroku or default to 3001
+const port = process.env.PORT || 3001;
 const connectDB = require("./src/config/db");
 const { MONGO_ATLAS_URI } = require("./src/config/db");
 const cors = require("cors");
@@ -36,7 +48,6 @@ const { spawn } = require('child_process');
 const { Server } = require("socket.io");
 const session = require("express-session");
 const MongoStore = require('connect-mongo'); // Import connect-mongo
-require("dotenv").config();
 
 // Définition explicite d'une clé secrète de session pour éviter l'erreur "secret option required for sessions"
 const SESSION_SECRET = process.env.SESSION_SECRET || "parkEz_secure_session_key_2025";
@@ -125,8 +136,6 @@ cloudinary.config({
 });
 
 // Create uploads directory if it doesn't exist
-const fs = require('fs');
-const path = require('path');
 const uploadsDir = path.join(__dirname, 'uploads/plates');
 if (!fs.existsSync(uploadsDir)){
     fs.mkdirSync(uploadsDir, { recursive: true });
@@ -190,6 +199,8 @@ const io = new Server(server, {
 
 // Socket.IO Connection handling
 io.on('connection', (socket) => {
+  //console.log('User connected:', socket.id);
+
   // Authenticate socket connection using token
   socket.on('authenticate', async (token) => {
     try {
@@ -227,12 +238,15 @@ app.set('io', io);
 // Initialize MQTT ingest service (if available)
 try {
   const { initMqtt } = require('./src/services/mqttIngest');
+  // initMqtt({ io }); // Commented out to prevent connection errors when no MQTT broker is running
 } catch (err) {
   console.warn('MQTT ingest service not initialized:', err.message);
 }
 
 // Define Routes
 app.use("/auth", authRoutes);
+
+// Mount user routes at both /User and /api for compatibility with different frontends
 app.use("/User", userRoutes);
 app.use("/api", userRoutes);
 app.use("/api", claimRoutes);
@@ -262,6 +276,7 @@ if (fs.existsSync(demoPath)) {
   console.log('Serving demo pages at /demo from', demoPath);
 }
 
+// Add error handlers
 app.use(claimErrorHandler);
 
 // Test Route
@@ -269,12 +284,11 @@ app.get("/", (req, res) => {
   res.send("MongoDB is connected to Express!");
 });
 
-// ---------------------------------------------------------
-// Unified Start Server Block (Optimized for Render & Local)
-// ---------------------------------------------------------
-server.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server started on port ${PORT}!`);
-  
+// Start Server
+// Use the 'port' variable defined above
+server.listen(port, () => {
+  console.log(`Server started on port ${port}!`);
+  // Optionally spawn local Python helper services (detector + RFID bridge)
   const startPythonServices = process.env.START_PY_SERVICES !== 'false';
   if (startPythonServices) {
     const projectRoot = path.join(__dirname, '..');
@@ -295,10 +309,6 @@ server.listen(PORT, '0.0.0.0', () => {
     services.forEach(svc => {
       const startService = () => {
         try {
-          if (!fs.existsSync(svc.script)) {
-             console.error(`❌ Cannot spawn ${svc.name}: File not found at ${svc.script}`);
-             return;
-          }
           console.log(`🔧 Spawning ${svc.name}: python3 ${svc.script}`);
           const proc = spawn('python3', [svc.script, ...svc.args], {
             cwd: path.dirname(svc.script),
@@ -332,4 +342,5 @@ server.listen(PORT, '0.0.0.0', () => {
   } else {
     console.log('ℹ️ START_PY_SERVICES=false - skipping local Python service spawn');
   }
+
 });

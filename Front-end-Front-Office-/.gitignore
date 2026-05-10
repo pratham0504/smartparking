@@ -6,3 +6,9 @@ lib/
 include/
 share/
 **/~/.EasyOCR/
+
+# Environment files - local overrides only
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
