@@ -12,6 +12,7 @@ import { Autocomplete } from "@react-google-maps/api";
 import { useGoogleMaps } from "../../../context/GoogleMapsContext";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { getBackendUrl } from '../../../utils/backend';
 import {
   FaMapMarkerAlt,
   FaMoneyBillAlt,
@@ -169,7 +170,7 @@ const OwnerAddPaking = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3001/api/addParkingRequest",
+        `${getBackendUrl()}/api/addParkingRequest`,
         formData,
         {
           headers: {

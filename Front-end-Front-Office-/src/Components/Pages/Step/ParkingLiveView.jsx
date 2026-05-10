@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import axios from "axios";
+import { getBackendUrl } from '../../../utils/backend';
 import { useParams, useNavigate } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
 
@@ -421,7 +422,7 @@ const ParkingPlan2D = ({
   const checkSpotAvailability = async (spot, startDate, endDate) => {
     try {
       const response = await axios.get(
-        `http://localhost:3001/api/reservations/by-spot?parkingId=${parkingId}&spotId=${spot.id}`
+        `${getBackendUrl()}/api/reservations/by-spot?parkingId=${parkingId}&spotId=${spot.id}`
       );
 
       const reservations = response.data;
@@ -485,7 +486,7 @@ const ParkingPlan2D = ({
     try {
       setLoading(true);
       const response = await axios.get(
-        `http://localhost:3001/parkings/parkings/${parkingId}`
+        `${getBackendUrl()}/parkings/parkings/${parkingId}`
       );
       const parkingData = response.data;
 

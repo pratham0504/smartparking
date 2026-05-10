@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { getBackendUrl } from '../utils/backend';
 import Select from "react-select";
 
 const vehicleOptions = [
@@ -94,7 +95,7 @@ const getUserProfile = async () => {
     const token = localStorage.getItem("token"); // Assure-toi que le token est stocké ici
     if (!token) throw new Error("No token found");
 
-    const response = await fetch("http://localhost:3001/User/userProfile", {
+    const response = await fetch(`${getBackendUrl()}/User/userProfile`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -131,7 +132,7 @@ const updateUserProfile = async (userData, token, image, password) => {
 
     if (password) formData.append("password", password);
 
-    const response = await fetch("http://localhost:3001/User/profile", {
+    const response = await fetch(`${getBackendUrl()}/User/profile`, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -276,7 +277,7 @@ const Profile = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:3001/User/rfid-cards", {
+      const response = await fetch(`${getBackendUrl()}/User/rfid-cards`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

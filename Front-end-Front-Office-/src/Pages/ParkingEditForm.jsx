@@ -17,6 +17,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { showToast } from "../utils/toast";
 import ParkingLocationMap from "../Components/Map/ParkingLocationMap";
+import { getBackendUrl } from "../utils/backend";
 
 import {
   FaMapMarkerAlt,
@@ -373,7 +374,7 @@ const ParkingEditForm = ({ editingParking, setEditingParking, refreshParkings })
       console.log("📌 Données envoyées :", data);
 
       const response = await axios.put(
-        `http://localhost:3001/parkings/parkings/${editingParking._id}`,
+        `${getBackendUrl()}/parkings/parkings/${editingParking._id}`,
         data,
         {
           headers: {

@@ -542,7 +542,7 @@ const PaymentSelection = ({ reservationId, reservation, onSuccess }) => {
       try {
         const token = localStorage.getItem("token");
         if (!token) return;
-        const resp = await fetch("http://localhost:3001/api/users/userProfile", {
+        const resp = await fetch(`${getBackendUrl()}/api/users/userProfile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!resp.ok) throw new Error("Failed to fetch user profile");
@@ -567,7 +567,7 @@ const PaymentSelection = ({ reservationId, reservation, onSuccess }) => {
       setError(null);
       try {
         const token = localStorage.getItem("token");
-        const resp = await fetch("http://localhost:3001/api/payments/wallet/pay", {
+        const resp = await fetch(`${getBackendUrl()}/api/payments/wallet/pay`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -580,7 +580,7 @@ const PaymentSelection = ({ reservationId, reservation, onSuccess }) => {
         if (!resp.ok) throw new Error(data.message || "Wallet payment failed");
 
         // Refresh wallet balance
-        const profileResp = await fetch("http://localhost:3001/api/users/userProfile", {
+        const profileResp = await fetch(`${getBackendUrl()}/api/users/userProfile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (profileResp.ok) {
@@ -787,7 +787,7 @@ const Confirmation = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:3001/api/reservations/${reservationId}/statusPayment`,
+      `${getBackendUrl()}/api/reservations/${reservationId}/statusPayment`,
         {
           method: "PUT",
           headers: {
@@ -824,7 +824,7 @@ const Confirmation = () => {
         try {
           const token = localStorage.getItem("token");
           const response = await fetch(
-            `http://localhost:3001/api/payments/verify/${paymentId}`,
+            `${getBackendUrl()}/api/payments/verify/${paymentId}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -865,7 +865,7 @@ const Confirmation = () => {
 
         // Fetch reservation
         const response = await fetch(
-          `http://localhost:3001/api/reservation/user/${userId}`,
+          `${getBackendUrl()}/api/reservation/user/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

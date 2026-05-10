@@ -7,6 +7,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { useMapbox } from "../../../context/MapboxContext";
 import { AuthContext } from '../../../AuthContext';
 import { motion } from "framer-motion"; // Import framer-motion
+import { getBackendUrl } from '../../../utils/backend';
 
 const mapContainerStyle = { 
   width: "100%", 
@@ -255,7 +256,7 @@ const BookNow = ({ parkingData, onContinue }) => {
     }
 
     if (id) {
-        axios.get(`http://localhost:3001/parkings/parkings/${id}`)
+        axios.get(`${getBackendUrl()}/parkings/parkings/${id}`)
             .then(response => {
                 console.log("📥 Données reçues depuis l'API:", response.data);
 

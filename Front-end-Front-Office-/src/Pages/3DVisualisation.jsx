@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { getBackendUrl } from '../utils/backend';
 
 const ImageUpload = ({ onUploadSuccess }) => {
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -22,7 +23,7 @@ const ImageUpload = ({ onUploadSuccess }) => {
     }
 
     try {
-      const response = await axios.post("http://localhost:3001/api/upload-images", formData, {
+      const response = await axios.post(`${getBackendUrl()}/api/upload-images`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 

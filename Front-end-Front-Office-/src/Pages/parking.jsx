@@ -1,5 +1,6 @@
 import React, { useState, useRef,useEffect } from 'react';
 import axios from 'axios';
+import { getBackendUrl } from '../utils/backend';
 import { useNavigate } from 'react-router-dom';
 import { Col, Container, Form, Row, Button, ListGroup, Dropdown, DropdownButton, Card, Spinner, Modal } from 'react-bootstrap';
 import "react-datepicker/dist/react-datepicker.css";
@@ -162,7 +163,7 @@ const Parking =({ formData, setFormData }) =>{
   // Fetch parking list from the API
   useEffect(() => {
     setLoading(true); // Set loading state to true
-    axios.get('http://localhost:3001/parkings/parkings', {
+    axios.get(`${getBackendUrl()}/parkings/parkings`, {
       headers: {
 
         'Authorization': `Bearer ${getToken()}`
@@ -278,7 +279,7 @@ const Parking =({ formData, setFormData }) =>{
     });
   
     setLoading(true);
-    axios.post('http://localhost:3001/parkings/submit', formData, {
+    axios.post(`${getBackendUrl()}/parkings/submit`, formData, {
       headers: { 'Authorization': `Bearer ${getToken()}` }
     })
     .then(() => {

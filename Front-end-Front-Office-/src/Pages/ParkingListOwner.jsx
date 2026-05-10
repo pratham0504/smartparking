@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { getBackendUrl } from '../utils/backend';
 import ParkingRequestForm from "./ParkingForm";
 import ParkingEditForm from "./ParkingEditForm";
 import { useNavigate } from "react-router-dom";
@@ -32,7 +33,7 @@ const ParkingListOwner = () => {
 
       console.log("Sending request to fetch parkings..."); 
       const response = await axios.get(
-        "http://localhost:3001/parkings/my-parkings",
+        `${getBackendUrl()}/parkings/my-parkings`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -61,7 +62,7 @@ const ParkingListOwner = () => {
     const promises = parkings.map(async (parking) => {
       try {
         await axios.get(
-          `http://localhost:3001/parkings/check-pending/${parking._id}`
+          `${getBackendUrl()}/parkings/check-pending/${parking._id}`
         );
         // If request succeeds, there is no pending request
         pendingStatus[parking._id] = false;
@@ -92,7 +93,7 @@ const ParkingListOwner = () => {
         return;
       }
 
-      const response = await axios.get("http://localhost:3001/User/employees", {
+      const response = await axios.get(`${getBackendUrl()}/User/employees`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -115,7 +116,7 @@ const ParkingListOwner = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.put(
-        `http://localhost:3001/parkings/assign-employee/${parkingId}/${selectedEmployee}`,
+        `${getBackendUrl()}/parkings/assign-employee/${parkingId}/${selectedEmployee}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -131,7 +132,7 @@ const ParkingListOwner = () => {
     try {
       // Check if there is already a pending request
       const response = await axios.get(
-        `http://localhost:3001/parkings/check-pending/${parking._id}`
+        `${getBackendUrl()}/parkings/check-pending/${parking._id}`
       );
 
       if (response.status === 200) {
@@ -157,7 +158,7 @@ const ParkingListOwner = () => {
     if (window.confirm("Do you really want to remove this parking lot?")) {
       try {
         const token = localStorage.getItem("token");
-        await axios.delete(`http://localhost:3001/parkings/parkings/${id}`, {
+        await axios.delete(`${getBackendUrl()}/parkings/parkings/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

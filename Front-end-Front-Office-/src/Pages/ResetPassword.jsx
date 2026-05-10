@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Col, Container, Form, Row, Alert, InputGroup } from 'react-bootstrap';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import axios from 'axios';
+import { getBackendUrl } from '../utils/backend';
 
 const ResetPassword = () => {
     const navigate = useNavigate();
@@ -78,7 +79,7 @@ const ResetPassword = () => {
 
         try {
             setIsLoading(true);
-            const response = await axios.post(`http://localhost:3001/api/reset-password/${token}`, { password });
+            const response = await axios.post(`${getBackendUrl()}/api/reset-password/${token}`, { password });
             
             setIsLoading(false);
             setMessage('Password has been reset successfully');

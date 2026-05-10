@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import axios from 'axios';
 import { io } from 'socket.io-client';
+import { getBackendUrl } from '../../../utils/backend';
 
 const EVENT_LABELS = {
   card_scan: 'Card scanned',
@@ -40,7 +41,7 @@ const LiveGateFeed = ({ parkingName = 'shah&anchor' }) => {
   const previousSlotsRef = useRef([]);
   const pollingRef = useRef(null);
 
-  const socketUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3001';
+  const socketUrl = getBackendUrl();
 
   useEffect(() => {
     const socket = io(socketUrl, { transports: ['websocket', 'polling'] });

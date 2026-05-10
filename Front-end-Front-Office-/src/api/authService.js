@@ -26,8 +26,8 @@ export const verifyResetToken = async (token) => {
             return { valid: false };
         }
         
-        // When backend is ready, uncomment this:
-        // const response = await axios.get(`http://localhost:3001/api/verify-reset-token/${token}`);
+        // When backend is ready, uncomment this and use the dynamic URL:
+        // const response = await axios.get(`${window.getBackendUrl()}/api/verify-reset-token/${token}`);
         // return response.data;
     } catch (error) {
         console.error('Error verifying token:', error);

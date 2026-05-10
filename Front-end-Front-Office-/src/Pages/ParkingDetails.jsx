@@ -5,6 +5,7 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useMapbox } from "../context/MapboxContext";
 import LiveParkingStatus from '../Components/Pages/LiveParkingStatus';
+import { getBackendUrl } from '../utils/backend';
 
 const vehiculeOptions = [
   { value: "Moto", label: "Motorcycle", image: "https://res.cloudinary.com/dpcyppzpw/image/upload/v1740765730/moto_xdypx2.png" },
@@ -62,7 +63,7 @@ const ParkingDetails = ({ parkingData, isPopup }) => {
     
     // Otherwise fetch from API using ID from URL params
     if (id) {
-      axios.get(`http://localhost:3001/parkings/parkings/${id}`)
+      axios.get(`${getBackendUrl()}/parkings/parkings/${id}`)
         .then(response => {
           // Handle potential difference in API response format
           const data = response.data;

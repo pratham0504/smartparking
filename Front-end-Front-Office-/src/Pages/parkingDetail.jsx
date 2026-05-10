@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { getBackendUrl } from '../utils/backend';
 import { useParams, useNavigate } from "react-router-dom";
 import { GoogleMap, Marker, InfoWindow } from "@react-google-maps/api";
 
@@ -29,7 +30,7 @@ const ParkingDetails = () => {
     
 
     useEffect(() => {
-        axios.get(`http://localhost:3001/parkings/parkings/${id}`)
+        axios.get(`${getBackendUrl()}/parkings/parkings/${id}`)
             .then(response => {
                 setParking(response.data);
                 setLoading(false);

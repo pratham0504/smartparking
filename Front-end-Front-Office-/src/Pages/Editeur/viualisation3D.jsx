@@ -9,6 +9,7 @@ import Street from "./Street";
 import ParkingArea from "./ParkingArea";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import { getBackendUrl } from "../../utils/backend";
 
 const ParkingPlan = ({ parkingId: propParkingId }) => {
   const { id: urlParkingId } = useParams();
@@ -111,7 +112,7 @@ const ParkingPlan = ({ parkingId: propParkingId }) => {
   const loadParkingData = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:3001/parkings/parkings/${parkingId}`
+        `${getBackendUrl()}/parkings/parkings/${parkingId}`
       );
       const parkingData = response.data;
       console.log("parkiiing data ", parkingData);
@@ -263,7 +264,7 @@ const ParkingPlan = ({ parkingId: propParkingId }) => {
       });
 
       const response = await axios.patch(
-        `http://localhost:3001/parkings/${parkingId}`,
+        `${getBackendUrl()}/parkings/${parkingId}`,
         parkingData
       );
       console.log("Parking sauvegardé:", response.data);
@@ -546,7 +547,7 @@ const ParkingPlan = ({ parkingId: propParkingId }) => {
   const checkSpotAvailability = async (spot) => {
     try {
       const response = await axios.get(
-        `http://localhost:3001/api/reservations/by-spot?parkingId=${parkingId}&spotId=${spot.id}`
+        `${getBackendUrl()}/api/reservations/by-spot?parkingId=${parkingId}&spotId=${spot.id}`
       );
 
       const reservations = response.data;

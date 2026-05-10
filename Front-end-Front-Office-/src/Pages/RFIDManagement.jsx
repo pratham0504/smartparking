@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaPlus, FaTrash, FaToggleOn, FaToggleOff, FaCheck } from "react-icons/fa";
+import { getBackendUrl } from '../utils/backend';
 
 const RFIDManagement = () => {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ const RFIDManagement = () => {
 
   const fetchUnlinkedScans = useCallback(async () => {
     try {
-      const response = await fetch("http://localhost:3001/api/rfid/unlinked-scans");
+      const response = await fetch(`${getBackendUrl()}/api/rfid/unlinked-scans`);
       if (!response.ok) return;
       const data = await response.json();
       if (data && data.scans) setUnlinkedScans(data.scans);
@@ -35,7 +36,7 @@ const RFIDManagement = () => {
         return;
       }
       
-      const response = await fetch("http://localhost:3001/User/rfid-cards", {
+      const response = await fetch(`${getBackendUrl()}/User/rfid-cards`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -50,7 +51,7 @@ const RFIDManagement = () => {
       
       // Get default card from user profile
       const profileResponse = await fetch(
-        "http://localhost:3001/User/userProfile",
+        `${getBackendUrl()}/User/userProfile`,
         {
           method: "GET",
           headers: {
@@ -95,7 +96,7 @@ const RFIDManagement = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:3001/User/rfid-cards", {
+      const response = await fetch(`${getBackendUrl()}/User/rfid-cards`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -132,7 +133,7 @@ const RFIDManagement = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `http://localhost:3001/User/rfid-cards/${cardId}/toggle`,
+        `${getBackendUrl()}/User/rfid-cards/${cardId}/toggle`,
         {
           method: "PUT",
           headers: {
@@ -162,7 +163,7 @@ const RFIDManagement = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `http://localhost:3001/User/rfid-cards/${cardId}`,
+        `${getBackendUrl()}/User/rfid-cards/${cardId}`,
         {
           method: "DELETE",
           headers: {
@@ -195,7 +196,7 @@ const RFIDManagement = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `http://localhost:3001/User/rfid-cards/${cardId}/set-default`,
+        `${getBackendUrl()}/User/rfid-cards/${cardId}/set-default`,
         {
           method: "PUT",
           headers: {
@@ -246,7 +247,7 @@ const RFIDManagement = () => {
           for (const scan of unlinkedScans) {
             try {
               // Register card to current user
-              const resp = await fetch("http://localhost:3001/User/rfid-cards", {
+              const resp = await fetch(`${getBackendUrl()}/User/rfid-cards`, {
                 method: "POST",
                 headers: {
                   Authorization: `Bearer ${token}`,
@@ -263,7 +264,7 @@ const RFIDManagement = () => {
               if (d.rfidCards) setRfidCards(d.rfidCards);
 
               // mark scan processed
-              await fetch("http://localhost:3001/api/rfid/mark-scan-processed", {
+              await fetch(`${getBackendUrl()}/api/rfid/mark-scan-processed`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ scanId: scan._id }),
@@ -508,7 +509,7 @@ const RFIDManagement = () => {
                             return;
                           }
 
-                          const resp = await fetch('http://localhost:3001/User/rfid-cards', {
+                          const resp = await fetch(`${getBackendUrl()}/User/rfid-cards`, {
                             method: 'POST',
                             headers: {
                               Authorization: `Bearer ${token}`,
@@ -538,7 +539,7 @@ const RFIDManagement = () => {
                           if (d.rfidCards) setRfidCards(d.rfidCards || []);
 
                           // mark scan processed
-                          await fetch('http://localhost:3001/api/rfid/mark-scan-processed', {
+                          await fetch(`${getBackendUrl()}/api/rfid/mark-scan-processed`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ scanId: scan._id }),
@@ -558,7 +559,7 @@ const RFIDManagement = () => {
                       onClick={async () => {
                         // dismiss scan
                         try {
-                          await fetch('http://localhost:3001/api/rfid/mark-scan-processed', {
+                          await fetch(`${getBackendUrl()}/api/rfid/mark-scan-processed`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ scanId: scan._id })

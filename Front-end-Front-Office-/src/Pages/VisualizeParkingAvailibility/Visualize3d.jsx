@@ -6,6 +6,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { io } from "socket.io-client";
+import { getBackendUrl } from '../../utils/backend';
 
 const Visualize3d = ({ parkingId: propParkingId }) => {
   const { id: urlParkingId } = useParams();
@@ -22,7 +23,7 @@ const Visualize3d = ({ parkingId: propParkingId }) => {
       try {
         setLoading(true);
         const response = await axios.get(
-          `http://localhost:3001/parkings/parkings/${parkingId}`
+          `${getBackendUrl()}/parkings/parkings/${parkingId}`
         );
         setParkingData(response.data);
         setLoading(false);
@@ -499,7 +500,7 @@ const Visualize3d = ({ parkingId: propParkingId }) => {
       controls.update();
     }
 
-    const socketUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3001';
+    const socketUrl = getBackendUrl();
     const socket = io(socketUrl, { transports: ['websocket', 'polling'] });
 
     socket.on('slots:update', (liveSlots) => {

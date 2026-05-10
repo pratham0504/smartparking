@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Col, Container, Form, Row, Alert } from 'react-bootstrap';
 import axios from 'axios';
+import { getBackendUrl } from '../utils/backend';
 
 const ForgotPassword = () => {
     const navigate = useNavigate();
@@ -30,7 +31,7 @@ const ForgotPassword = () => {
         }
 
         try {
-            await axios.post('http://localhost:3001/api/forget-password', { email });
+            await axios.post(`${getBackendUrl()}/api/forget-password`, { email });
             setMessage('Check your email for the reset link.');
             setError('');
             // Redirect to home page after 2 seconds

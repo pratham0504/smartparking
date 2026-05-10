@@ -4,6 +4,7 @@ import { Button, Row, Col, Card, Spinner, Modal, Toast } from "react-bootstrap";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaShareAlt } from "react-icons/fa";
+import { getBackendUrl } from '../../../utils/backend';
 
 const Step2UploadImages = () => {
   const [images, setImages] = useState({
@@ -142,7 +143,7 @@ const Step2UploadImages = () => {
 
     try {
       const res = await axios.put(
-        `http://localhost:3001/api/update/${parkingId}`,
+        `${getBackendUrl()}/api/update/${parkingId}`,
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },

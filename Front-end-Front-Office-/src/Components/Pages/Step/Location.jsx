@@ -17,6 +17,7 @@ import axios from "axios";
 import { useNavigate, useLocation as useRouterLocation } from "react-router-dom";
 import ParkingDetails from "../../../Pages/ParkingDetails";
 import { MUMBAI_CENTER } from "../../../utils/parkingLocations";
+import { getBackendUrl } from '../../../utils/backend';
 
 const defaultCenter = { lat: MUMBAI_CENTER[1], lng: MUMBAI_CENTER[0] };
 
@@ -461,7 +462,7 @@ const SecLocation = () => {
     try {
       // Récupération des données complètes du parking
       const response = await axios.get(
-        `http://localhost:3001/parkings/parkings/${parking.id}`
+        `${getBackendUrl()}/parkings/parkings/${parking.id}`
       );
       const fullParkingData = response.data;
 
@@ -489,7 +490,7 @@ const SecLocation = () => {
         setLoading(true);
         console.log("Fetching parkings from API...");
         const response = await axios.get(
-          "http://localhost:3001/parkings/parkings"
+          `${getBackendUrl()}/parkings/parkings`
         );
         console.log("API response:", response.data);
 
@@ -565,7 +566,7 @@ const SecLocation = () => {
             try {
                 setLoading(true);
                 console.log("Fetching parkings from API...");
-                const response = await axios.get('http://localhost:3001/api/parkings');
+                const response = await axios.get(`${getBackendUrl()}/api/parkings`);
                 console.log("API response:", response.data);
                 
                 // Transform the API data format to match our needs
@@ -979,7 +980,7 @@ const SecLocation = () => {
       setError(null);
 
       const response = await axios.get(
-        "http://localhost:3001/parkings/parkings"
+        `${getBackendUrl()}/parkings/parkings`
       );
       const allParkings = response.data;
 
@@ -1110,7 +1111,7 @@ const SecLocation = () => {
     try {
       // Fetch complete parking data from API
       const response = await axios.get(
-        `http://localhost:3001/parkings/parkings/${parking.id}`
+        `${getBackendUrl()}/parkings/parkings/${parking.id}`
       );
       setSelectedParking(response.data);
       setShowPopup(true);

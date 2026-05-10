@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import axios from "axios";
+import { getBackendUrl } from '../utils/backend';
 
 const UserSubscriptions = () => {
   const [subscriptions, setSubscriptions] = useState([]);
@@ -37,7 +38,7 @@ const UserSubscriptions = () => {
 
         // Make API request to get user subscriptions
         const response = await axios.get(
-          `http://localhost:3001/api/subscriptions/user/${extractedUserId}`,
+          `${getBackendUrl()}/api/subscriptions/user/${extractedUserId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

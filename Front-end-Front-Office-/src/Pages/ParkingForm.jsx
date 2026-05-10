@@ -17,6 +17,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { showToast } from "../utils/toast";
 import ParkingLocationMap from "../Components/Map/ParkingLocationMap";
+import { getBackendUrl } from "../utils/backend";
 
 import {
   FaMapMarkerAlt,
@@ -407,7 +408,7 @@ const validateForm = () => {
   
       // Submit to API
       const response = await axios.post(
-        "http://localhost:3001/parkings/submit",
+        `${getBackendUrl()}/parkings/submit`,
         formData,
         {
           headers: {

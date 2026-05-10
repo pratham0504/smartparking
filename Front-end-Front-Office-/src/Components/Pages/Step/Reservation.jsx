@@ -24,6 +24,7 @@ import {
 
 import LiveParkingStatus from "../LiveParkingStatus";
 import { jwtDecode } from "jwt-decode";
+import { getBackendUrl } from '../../../utils/backend';
 
 // Ajouter l'import pour la locale anglaise indienne de date-fns
 import { registerLocale } from "react-datepicker";
@@ -692,7 +693,7 @@ const Reservation = ({
       const token = localStorage.getItem('token');
       
       const response = await axios.get(
-        `http://localhost:3001/User/rfid-cards`,
+        `${getBackendUrl()}/User/rfid-cards`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       
@@ -733,7 +734,7 @@ const Reservation = ({
       }
 
       const response = await axios.get(
-        `http://localhost:3001/api/reservations/by-spot?parkingId=${parkingData._id}&spotId=${parkingData.selectedSpotId}`
+        `${getBackendUrl()}/api/reservations/by-spot?parkingId=${parkingData._id}&spotId=${parkingData.selectedSpotId}`
       );
 
       // Vérifier les réservations existantes
@@ -861,7 +862,7 @@ const Reservation = ({
       console.log("Sending reservation data:", reservationPayload);
 
       const response = await axios.post(
-        "http://localhost:3001/api/reservations",
+        `${getBackendUrl()}/api/reservations`,
         reservationPayload,
         {
           headers: {

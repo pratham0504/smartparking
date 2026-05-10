@@ -128,8 +128,8 @@ const FaceAuth = () => {
   const getLabeledFaceDescriptions = async () => {
     try {
       setStatus("Fetching registered user faces...");
-      // Fetch users from your backend API
-      const response = await fetch("http://localhost:3001/User/users/");
+      // Fetch users from your backend API using runtime backend URL
+      const response = await fetch(`${getBackendUrl()}/User/users/`);
       if (!response.ok) {
         throw new Error(
           `Failed to fetch users: ${response.status} ${response.statusText}`
