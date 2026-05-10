@@ -1,7 +1,7 @@
 import React from "react";
 import { Card, CardBody, CardTitle } from "reactstrap";
 import { Link } from "react-router-dom";
-import { activityData } from "../../common/data/index";
+import { activityData } from "../../common/data.js";
 
 const ActivityComp = () => {
   return (

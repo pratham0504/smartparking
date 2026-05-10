@@ -16,7 +16,7 @@ import {
 } from "reactstrap";
 import { Link } from "react-router-dom";
 
-import { chatData } from "../../common/data/index";
+import { chatData } from "../../common/data.js";
 
 import Reciver from "./Reciver";
 import Sender from "./Sender";

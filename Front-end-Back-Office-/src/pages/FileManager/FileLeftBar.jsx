@@ -10,7 +10,7 @@ import {
   UncontrolledAlert,
   UncontrolledDropdown,
 } from "reactstrap"
-import { filemanagerData, filesData } from "../../common/data/index"
+import { filemanagerData, filesData } from "../../common/data.js"
 
 const FileRightBar = () => {
   const [isOpen, setIsOpen] = useState(true)

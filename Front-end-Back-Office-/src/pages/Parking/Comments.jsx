@@ -11,7 +11,7 @@ import {
 
 //SimpleBar
 import SimpleBar from "simplebar-react"
-import { commentsData } from "../../common/data/index"
+import { commentsData } from "../../common/data.js"
 
 const Comments = () => {
   return (

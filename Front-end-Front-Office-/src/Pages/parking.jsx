@@ -349,7 +349,7 @@ const Parking =({ formData, setFormData }) =>{
 
   // View parking details
   const viewParkingDetails = (id) => {
-    navigate(`/parkings/parkings/${id}`);
+    navigate(`/parkings/${id}`);
   };
 
   // Delete parking request

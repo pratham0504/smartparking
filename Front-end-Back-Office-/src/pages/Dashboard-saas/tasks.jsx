@@ -16,7 +16,7 @@ import classnames from "classnames"
 
 //Simple bar
 import SimpleBar from "simplebar-react"
-import { tasksData } from "../../common/data/index"
+import { tasksData } from "../../common/data.js"
 
 const TotalSellongProduct = () => {
   const [activeTab, setActiveTab] = useState("1")

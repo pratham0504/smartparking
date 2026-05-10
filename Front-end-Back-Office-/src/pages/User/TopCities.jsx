@@ -1,6 +1,6 @@
 import React from "react"
 import { Card, CardBody, CardTitle, Progress } from "reactstrap"
-import { TopCitiesSelling } from "../../common/data/index"
+import { TopCitiesSelling } from "../../common/data.js"
 
 const TopCities = () => {
   return (

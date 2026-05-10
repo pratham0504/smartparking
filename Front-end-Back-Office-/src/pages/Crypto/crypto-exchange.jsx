@@ -30,7 +30,7 @@ import Breadcrumbs from "../../components/Common/Breadcrumb"
 
 //Import Images
 import avatar from "../../assets/images/users/avatar-1.jpg"
-import { orderbookData } from "../../common/data/index"
+import { orderbookData } from "../../common/data.js"
 
 const CryptoExchange = props => {
 
