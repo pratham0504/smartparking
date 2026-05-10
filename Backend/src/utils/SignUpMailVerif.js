@@ -273,7 +273,7 @@ const sendEmail = async (options) => {
 };
 
 const getSignUpVerificationTemplate = (email, token) => {
-  const verificationLink = `http://localhost:3000/confirm/${token}`;
+  const verificationLink = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/confirm/${token}`;
 
   return {
     subject: "✨ Welcome to parkEz - Please Verify Your Email",

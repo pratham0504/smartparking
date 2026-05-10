@@ -15,6 +15,7 @@ router.post("/verify-otp", verifyOTP);
 
 // Register Google routes only when Google OAuth is configured.
 const hasGoogleConfig = process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET;
+const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
 
 // Helper to compute the effective Google callback URL for the current request.
 // If an absolute GOOGLE_CALLBACK_URL is provided it will be used. Otherwise
@@ -44,7 +45,7 @@ if (hasGoogleConfig) {
     passport.authenticate("google", { failureRedirect: "/" }),
     (req, res) => {
       if (!req.user) {
-        return res.redirect("http://localhost:3000?error=Unauthorized");
+        return res.redirect(`${frontendUrl}?error=Unauthorized`);
       }
 
       if (!process.env.JWT_SECRET) {
@@ -67,7 +68,7 @@ if (hasGoogleConfig) {
       );
 
       // Redirect to frontend with token
-      res.redirect(`http://localhost:3000/google/callback?token=${token}`);
+      res.redirect(`${frontendUrl}/google/callback?token=${token}`);
     }
   );
 } else {

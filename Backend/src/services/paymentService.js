@@ -121,6 +121,7 @@ const confirmSubscriptionPayment = async (subscriptionId, paymentIntentId) => {
 
 async function generatePayment(amount, trackingId) {
   const url = "https://developers.flouci.com/api/generate_payment";
+  const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
 
   const payload = {
     app_token: "628b2944-79ad-4ca2-b92d-cf92026f2bd9",
@@ -128,7 +129,7 @@ async function generatePayment(amount, trackingId) {
     amount: amount,
     accept_card: "true",
     session_timeout_secs: 1200,
-    success_link: "http://localhost:3000/booking",
+    success_link: `${frontendUrl}/booking`,
     fail_link: "https://parkEz-backend.onrender.com/fail",
     developer_tracking_id: trackingId,
   };

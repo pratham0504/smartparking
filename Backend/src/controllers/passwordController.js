@@ -2,6 +2,7 @@ const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const User = require("../models/userModel");
 const sendEmail = require("../utils/sendEmail");
+const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
 
 exports.sendResetPasswordEmail = async (req, res) => {
   const { email } = req.body;
@@ -17,7 +18,7 @@ exports.sendResetPasswordEmail = async (req, res) => {
     await user.save();
 
     // Force the frontend URL without using any variables
-    const resetUrl = "http://localhost:3000/reset-password/" + token;
+    const resetUrl = `${frontendUrl}/reset-password/${token}`;
 
     const message = `
 Hello,
