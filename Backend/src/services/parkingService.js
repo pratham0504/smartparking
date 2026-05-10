@@ -35,24 +35,40 @@ const getParkingsByEmployee = async (req, res) => {
 
 const getNearbyRecommendedParkings = async (lat, lng, limit = 10) => {
   try {
-    const nearbyParkings = await Parking.aggregate([
-      {
-        $geoNear: {
-          near: {
-            type: "Point",
-            coordinates: [parseFloat(lng), parseFloat(lat)],
-          },
-          distanceField: "distance",
-          spherical: true,
-          query: {
-            status: "accepted",
-            availableSpots: { $gt: 0 },
-          },
-        },
-      },
-      { $limit: limit },
-    ]);
-    return nearbyParkings;
+    const toRadians = (degrees) => (degrees * Math.PI) / 180;
+    const haversineDistanceKm = (lat1, lng1, lat2, lng2) => {
+      const earthRadiusKm = 6371;
+      const deltaLat = toRadians(lat2 - lat1);
+      const deltaLng = toRadians(lng2 - lng1);
+      const a =
+        Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+        Math.cos(toRadians(lat1)) *
+          Math.cos(toRadians(lat2)) *
+          Math.sin(deltaLng / 2) * Math.sin(deltaLng / 2);
+      return 2 * earthRadiusKm * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    };
+
+    const parkings = await Parking.find({
+      status: "accepted",
+      availableSpots: { $gt: 0 },
+      "position.lat": { $type: "number" },
+      "position.lng": { $type: "number" },
+    })
+      .populate("Owner", "name email")
+      .lean();
+
+    return parkings
+      .map((parking) => ({
+        ...parking,
+        distance: haversineDistanceKm(
+          parseFloat(lat),
+          parseFloat(lng),
+          parking.position.lat,
+          parking.position.lng
+        ),
+      }))
+      .sort((a, b) => a.distance - b.distance)
+      .slice(0, limit);
   } catch (error) {
     console.error("Error fetching nearby parkings:", error);
     throw error;
