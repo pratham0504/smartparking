@@ -1,0 +1,22 @@
+[submodule "Backend"]
+    path = Backend
+    url = https://github.com/PiDev-2025/Backend.git
+    branch = main
+    update = rebase
+
+[submodule "Front-end-Front-Office-"]
+    path = Front-end-Front-Office-
+    url = https://github.com/PiDev-2025/Front-end-Front-Office-.git
+    branch = main
+    update = rebase
+
+[submodule "Front-end-Back-Office-"]
+    path = Front-end-Back-Office-
+    url = https://github.com/PiDev-2025/Front-end-Back-Office-.git
+    branch = main
+    update = rebase
+[submodule "Car-Number-Plates-Detection-IA-Model-"]
+    path = Car-Number-Plates-Detection-IA-Model-
+    url = https://github.com/PiDev-2025/Plate-Detector.git
+    branch = main
+    update = rebase

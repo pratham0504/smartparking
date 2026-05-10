@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Camera Demo - ParkEz</title>
+  <style>body{font-family:Arial;padding:20px}video{width:320px;height:240px;border:1px solid #ccc}canvas{display:none}</style>
+</head>
+<body>
+  <h2>Mobile Camera Demo (Wi-Fi uploader)</h2>
+  <p>Allow camera access, then press Capture to send a snapshot to the backend.</p>
+  <video id="video" autoplay playsinline></video>
+  <div>
+    <button id="capture">Capture & Upload</button>
+    <label>Interval (s): <input id="interval" type="number" value="3" min="1" style="width:60px"/></label>
+    <button id="start">Start Auto</button>
+    <button id="stop">Stop</button>
+  </div>
+  <div id="status"></div>
+  <canvas id="canvas" width="640" height="480"></canvas>
+
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const status = document.getElementById('status');
+
+    async function startCamera(){
+      try{
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+        video.srcObject = stream;
+        await video.play();
+      }catch(err){
+        status.innerText = 'Camera error: ' + err.message;
+      }
+    }
+
+    async function captureAndUpload(){
+      if(!video.videoWidth) return;
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      canvas.toBlob(async (blob) => {
+        const fd = new FormData();
+        fd.append('snapshot', blob, 'snapshot.jpg');
+        fd.append('cameraId', 'mobile-demo-1');
+        fd.append('gateId', 'gate-mobile-1');
+        fd.append('timestampUtc', new Date().toISOString());
+
+        status.innerText = 'Uploading...';
+        try{
+          const resp = await fetch('/api/camera/event', { method: 'POST', body: fd });
+          const j = await resp.json();
+          status.innerText = 'Uploaded: ' + JSON.stringify(j.event || j);
+        }catch(err){
+          status.innerText = 'Upload failed: ' + err.message;
+        }
+      }, 'image/jpeg', 0.7);
+    }
+
+    document.getElementById('capture').addEventListener('click', captureAndUpload);
+
+    let autoTimer = null;
+    document.getElementById('start').addEventListener('click', () => {
+      const sec = Number(document.getElementById('interval').value) || 3;
+      if(autoTimer) clearInterval(autoTimer);
+      autoTimer = setInterval(captureAndUpload, sec * 1000);
+      status.innerText = 'Auto capture started';
+    });
+    document.getElementById('stop').addEventListener('click', () => {
+      if(autoTimer) clearInterval(autoTimer);
+      autoTimer = null;
+      status.innerText = 'Stopped';
+    });
+
+    startCamera();
+  </script>
+</body>
+</html>

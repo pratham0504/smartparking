@@ -1,0 +1,23 @@
+{
+  "name": "Parkini",
+  "description": "Parking management system with AI number plate detection",
+  "keywords": ["parking", "ai", "number-plate-detection", "react", "node"],
+  "website": "",
+  "repository": "https://github.com/YOUR_USERNAME/Parkini",
+  "stack": "container",
+  "env": {
+    "NODE_ENV": {
+      "description": "Environment setting",
+      "value": "production"
+    },
+    "MONGO_URI": {
+      "description": "MongoDB connection string",
+      "required": true
+    }
+  },
+  "addons": [
+    {
+      "plan": "mongolab:sandbox"
+    }
+  ]
+}

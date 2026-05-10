@@ -1,0 +1,12 @@
+{
+  "framework": "create-react-app",
+  "buildCommand": "cd Frontend-Front-Office- && npm install && npm run build",
+  "outputDirectory": "Frontend-Front-Office-/build",
+  "installCommand": "npm install",
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api"
+    }
+  ]
+}

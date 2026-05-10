@@ -1,0 +1,51 @@
+name: Deploy Parkini
+
+on:
+  push:
+    branches:
+      - main
+  # Allow manual runs from the Actions UI or via the API/GitHub CLI
+  workflow_dispatch: {}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Backend
+        uses: docker/build-push-action@v2
+        with:
+          context: ./Backend
+          push: true
+          tags: pratham0504/parkez-backend:latest
+
+      - name: Build and push Frontend Front Office
+        uses: docker/build-push-action@v2
+        with:
+          context: ./Front-end-Front-Office-
+          push: true
+          tags: pratham0504/parkez-frontend:latest
+
+      - name: Build and push Backend Office
+        uses: docker/build-push-action@v2
+        with:
+          context: ./Front-end-Back-Office-
+          push: true
+          tags: pratham0504/parkez-backoffice:latest
+
+      - name: Build and push AI Model
+        uses: docker/build-push-action@v2
+        with:
+          context: ./Car-Number-Plates-Detection-IA-Model-
+          push: true
+          tags: pratham0504/parkez-ai:latest

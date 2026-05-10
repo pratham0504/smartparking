@@ -1,0 +1,74 @@
+/* Parking marker styles */
+.parking-marker {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.parking-marker:hover {
+  transform: scale(1.1);
+}
+
+/* Status-based colors */
+.parking-marker.status-high .marker-icon {
+  background-color: #22C55E; /* Green for high capacity */
+}
+
+.parking-marker.status-medium .marker-icon {
+  background-color: #F59E0B; /* Yellow for medium capacity */
+}
+
+.parking-marker.status-low .marker-icon {
+  background-color: #EF4444; /* Red for low capacity */
+}
+
+/* Popup styles */
+.mapboxgl-popup-content {
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.mapboxgl-popup-content h3 {
+  margin: 0 0 8px;
+  color: #1F2937;
+}
+
+.mapboxgl-popup-content p {
+  margin: 0;
+  color: #4B5563;
+}
+
+/* Free parking indicator */
+.free-parking-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  background-color: #22C55E;
+  color: white;
+  border-radius: 4px;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* Price category indicators */
+.price-category {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.price-category-A {
+  background-color: #E5E7EB;
+  color: #1F2937;
+}
+
+.price-category-B {
+  background-color: #FEF3C7;
+  color: #92400E;
+}
+
+.price-category-C {
+  background-color: #DBEAFE;
+  color: #1E40AF;
+}

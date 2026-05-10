@@ -1,0 +1,124 @@
+/* Styles spécifiques pour le module OwnerClaims */
+
+.container {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.claimCard {
+  transition: all 0.2s ease;
+}
+
+.claimCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+}
+
+.statusPending {
+  background-color: #FEF3C7;
+  color: #92400E;
+}
+
+.statusResolved {
+  background-color: #D1FAE5;
+  color: #065F46;
+}
+
+.statusInProgress {
+  background-color: #DBEAFE;
+  color: #1E40AF;
+}
+
+.statusRejected {
+  background-color: #FEE2E2;
+  color: #B91C1C;
+}
+
+.tableHeader {
+  position: sticky;
+  top: 0;
+  background-color: #F9FAFB;
+  z-index: 10;
+}
+
+.expandTransition {
+  transition: max-height 0.3s ease-in-out;
+}
+
+.fadeIn {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Adding some additional useful styles */
+.chartContainer {
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.chartContainer:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.selectField {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
+}
+
+/* Media queries pour responsive design */
+@media (max-width: 768px) {
+  .statsGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .filtersWrapper {
+    flex-direction: column;
+  }
+  
+  .searchInput {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .tableResponsive {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+  }
+  
+  .cardView {
+    display: flex;
+    flex-direction: column;
+  }
+}

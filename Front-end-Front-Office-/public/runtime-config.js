@@ -1,0 +1,5 @@
+window.RUNTIME_CONFIG = {
+  MAPBOX_TOKEN: "",
+  VITE_MAPBOX_TOKEN: "",
+  REACT_APP_MAPBOX_TOKEN: ""
+};

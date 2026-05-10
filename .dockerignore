@@ -1,0 +1,42 @@
+# Node
+node_modules
+npm-debug.log
+yarn-error.log
+.npm
+
+# Git
+.git
+.gitignore
+
+# CI
+.github
+.gitlab-ci.yml
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Build folders
+dist
+build
+coverage
+
+# Docker
+.dockerignore
+Dockerfile*
+docker-compose*
+
+# Logs
+logs
+*.log
+
+# Temporary files
+tmp
+.tmp
+.cache
+
+# System Files
+.DS_Store
+Thumbs.db

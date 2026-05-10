@@ -1,0 +1,301 @@
+version: '3.8'
+
+services:
+  ### 🚀 Backend (Express.js)
+  backend:
+    image: ${DOCKER_USERNAME}/parkEz-backend:latest
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+      args:
+        BUILDKIT_INLINE_CACHE: 1
+        DOCKER_BUILDKIT: 1
+        NODE_ENV: production
+      cache_from:
+        - ${DOCKER_USERNAME}/parkEz-backend:latest
+    container_name: Backend
+    restart: always
+    ports:
+      - "3001:3001"
+    depends_on:
+      - mongo
+    env_file:
+      - ./Backend/.env
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - MONGO_URI=${MONGO_URI}
+
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - npm_cache:/home/node/.npm
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "512M"
+
+  ### 🎨 Frontend (React)
+  frontend:
+    build:
+      context: ./Front-end-Front-Office-
+      dockerfile: Dockerfile
+      args:
+        BUILDKIT_INLINE_CACHE: 1
+        DOCKER_BUILDKIT: 1
+        NODE_ENV: production
+        REACT_APP_API_URL: http://backend:3001
+        MAPBOX_TOKEN: ${MAPBOX_TOKEN}
+        VITE_MAPBOX_TOKEN: ${VITE_MAPBOX_TOKEN}
+        REACT_APP_MAPBOX_TOKEN: ${REACT_APP_MAPBOX_TOKEN}
+    container_name: Front-end-Front-Office
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://backend:3001
+      - VITE_MAPBOX_TOKEN=${VITE_MAPBOX_TOKEN}
+      - REACT_APP_MAPBOX_TOKEN=${REACT_APP_MAPBOX_TOKEN}
+      - MAPBOX_TOKEN=${MAPBOX_TOKEN}
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000"]
+      interval: 30s
+
+  ### 💼 Back Office (React)
+  backoffice:
+    build:
+      context: ./Front-end-Back-Office-
+      dockerfile: Dockerfile
+      args:
+        BUILDKIT_INLINE_CACHE: 1
+        DOCKER_BUILDKIT: 1
+        NODE_ENV: production
+        VITE_API_URL: http://backend:3001
+    container_name: Front-end-Back-Office
+    restart: always
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://backend:3001
+      - VITE_MAPBOX_TOKEN=${VITE_MAPBOX_TOKEN}
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:5173"]
+      interval: 30s
+      timeout: 20s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+
+  ### 🌍 MongoDB
+  mongo:
+    image: mongo:latest
+    container_name: parkEz-database
+    restart: always
+    ports:
+      - "27017:27017"
+    command: mongod --wiredTigerCacheSizeGB 1 --quiet --bind_ip_all --noauth
+    environment:
+      - MONGO_INITDB_DATABASE=parkEzDB
+    volumes:
+      - mongo-data:/data/db:delegated
+    networks:
+      - app-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+  ### 🛠️ Jenkins (CI/CD)
+  jenkins:
+    build:
+      context: .
+      dockerfile: jenkins.Dockerfile
+    container_name: jenkins
+    restart: always
+    user: root
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home:z
+      - /var/run/docker.sock:/var/run/docker.sock:z
+      - ./jenkins/init.groovy.d:/var/jenkins_home/init.groovy.d:ro
+      - ./jenkins/docker-config.json:/etc/docker/daemon.json:ro  # Ajouter cette ligne
+    environment:
+      JAVA_OPTS: "-Djenkins.install.runSetupWizard=false -Dhudson.model.UsageStatistics.disabled=true -Djenkins.metrics.impl.prometheus.default.namespace=jenkins -Djenkins.metrics.impl.prometheus.path=/prometheus -Dplugin.prometheus.collectDiskUsage=false"
+      JENKINS_OPTS: "--httpPort=8080"
+      JENKINS_UC: "https://updates.jenkins.io"
+      JENKINS_UC_EXPERIMENTAL: "https://updates.jenkins.io/experimental"
+      JENKINS_PLUGIN_INFO: "https://updates.jenkins.io/current/plugin-versions.json"
+      CASC_JENKINS_CONFIG: "/var/jenkins_home/jenkins.yaml"
+    networks:
+      - app-network
+    labels:
+      - "parkEz.type=infra"
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+    extra_hosts:
+      - "nexus:host-gateway"  # Permet à Jenkins de résoudre "nexus"
+      - "nexus:172.20.0.2"  # Assurer que Jenkins peut résoudre "nexus"
+
+  ### 🔍 SonarQube (Analyse de Code)
+  sonarqube:
+    image: sonarqube:lts
+    container_name: sonarqube
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      - SONAR_JDBC_URL=jdbc:postgresql://postgres:5432/sonar
+      - SONAR_JDBC_USERNAME=sonar
+      - SONAR_JDBC_PASSWORD=sonar
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+      - SONAR_CE_JAVAOPTS=-Xmx512m
+      - SONAR_WEB_JAVAOPTS=-Xmx512m
+    ports:
+      - "9000:9000"
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data:z
+      - sonarqube_extensions:/opt/sonarqube/extensions:z
+      - sonarqube_logs:/opt/sonarqube/logs:z
+    networks:
+      - app-network
+    labels:
+      - "parkEz.type=infra"
+
+  ### 🛢️ PostgreSQL (DB pour SonarQube)
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: sonar
+      POSTGRES_PASSWORD: sonar
+      POSTGRES_DB: sonar
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    labels:
+      - "parkEz.type=infra"
+
+  ### 📊 Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: always
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    networks:
+      - app-network
+    labels:
+      - "parkEz.type=monitoring"
+
+  ### Nexus Repository
+  nexus:
+    image: sonatype/nexus3:latest
+    container_name: nexus
+    restart: always
+    ports:
+      - "8081:8081"
+      - "8082:8082"  # Port for Docker registry
+    volumes:
+      - nexus-data:/nexus-data
+    environment:
+      - INSTALL4J_ADD_VM_PARAMS=-Xms1g -Xmx2g -XX:MaxDirectMemorySize=2g -Djava.util.prefs.userRoot=/nexus-data
+    networks:
+      - app-network
+    labels:
+      - "parkEz.type=infra"
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+
+  ### 📈 Grafana
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: always
+    ports:
+      - "3005:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    depends_on:
+      - prometheus
+    networks:
+      - app-network
+    labels:
+      - "parkEz.type=monitoring"
+
+volumes:
+  jenkins_home:
+    name: jenkins_home_parkEz
+    external: true
+  sonarqube_data:
+    name: sonarqube_data_parkEz
+    external: true
+  sonarqube_extensions:
+    name: sonarqube_extensions_parkEz
+    external: true
+  sonarqube_logs:
+    name: sonarqube_logs_parkEz
+    external: true
+  mongo-data:
+    name: mongo_data_parkEz
+    external: true
+  postgres_data:
+    name: postgres_data_parkEz
+    external: true
+  backend_modules:
+    name: parkEz_backend_modules
+  backend_node_modules:
+    name: parkEz_backend_node_modules
+  backend_dependencies:
+  prometheus_data:
+    name: prometheus_data_parkEz
+    external: true
+  grafana_data:
+    name: grafana_data_parkEz
+    external: true
+  npm_cache:
+    name: parkEz_npm_cache
+    external: true
+  nexus-data:
+    name: nexus_data_parkEz
+
+networks:
+  app-network:
+    external: true
+    name: app-network

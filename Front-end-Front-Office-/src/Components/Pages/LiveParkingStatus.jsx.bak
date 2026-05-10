@@ -1,0 +1,51 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import './LiveParkingStatus.css';
+
+const LiveParkingStatus = () => {
+    const [slots, setSlots] = useState([]);
+    const [error, setError] = useState(null);
+
+    const fetchParkingStatus = async () => {
+        try {
+            const response = await axios.get('http://localhost:3001/api/parking/status');
+            if (response.data && Array.isArray(response.data)) {
+                setSlots(response.data);
+            } else {
+                setSlots([]);
+            }
+            setError(null);
+        } catch (err) {
+            setError('Failed to fetch parking status. The server might be down.');
+            console.error('Error fetching parking status:', err);
+        }
+    };
+
+    useEffect(() => {
+        fetchParkingStatus();
+        const intervalId = setInterval(fetchParkingStatus, 5000); // Poll every 5 seconds
+
+        return () => clearInterval(intervalId); // Cleanup on component unmount
+    }, []);
+
+    return (
+        <div className="live-parking-status-container">
+            <h3 className="text-Mwhite">Live Parking Status</h3>
+            {error && <p className="error-message">{error}</p>}
+            <div className="slots-grid">
+                {slots.length > 0 ? (
+                    slots.map(slot => (
+                        <div key={slot.slotNumber} className={`slot-card ${slot.isOccupied ? 'occupied' : 'available'}`}>
+                            <div className="slot-number">Slot {slot.slotNumber}</div>
+                            <div className="slot-status">{slot.isOccupied ? 'Occupied' : 'Available'}</div>
+                        </div>
+                    ))
+                ) : (
+                    !error && <p>No parking slot data available.</p>
+                )}
+            </div>
+        </div>
+    );
+};
+
+export default LiveParkingStatus;

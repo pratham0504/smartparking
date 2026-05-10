@@ -1,0 +1,180 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+    font-family: 'Manrope', sans-serif;
+    @apply text-base text-Mblack
+}
+
+.container {
+    max-width: 1300px;
+}
+
+@media screen and (max-width: 1200px) {
+    .container {
+        max-width: 92%;
+    }
+}
+
+section {
+    padding: 50px 0;
+}
+
+
+/* start:btn */
+.btnClass {
+    @apply px-[24px] py-[12px] rounded-full border border-solid leading-6 inline-block
+}
+
+.btnClass.large {
+    @apply px-[24px] py-[16px]
+}
+
+/* end:btn */
+
+.modal-backdrop.show {
+    background-color: rgba(23, 23, 23, 0.08) !important;
+    backdrop-filter: blur(100px);
+}
+
+.fieldInput {
+    @apply bg-transparent h-[58px] px-4 rounded-full border border-solid border-[#E5E5E5] outline-none
+}
+
+.fieldInput:hover,
+.fieldInput:focus,
+.fieldInput:active {
+    @apply bg-transparent h-[58px] px-4 rounded-full border border-solid border-[#E5E5E5] outline-none
+}
+
+.arrowPlus {
+    @apply relative p-[0.3rem]
+}
+
+.arrowPlus span {
+    transition: .5s;
+    @apply inline-block w-full h-[1px] bg-Mblack absolute
+}
+
+.arrowPlus span:nth-child(1) {
+    @apply top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+}
+
+.arrowPlus span:nth-child(2) {
+    @apply top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-[90deg]
+}
+
+.arrowPlus.active span {
+    @apply top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-[0]
+}
+
+.barIcon {
+    @apply flex flex-wrap gap-1
+}
+
+.barIcon div {
+    @apply w-full h-[2px] inline-block bg-Mwhite rounded-sm transition-all duration-500
+}
+
+.barIcon div {
+    @apply w-full h-[2px] inline-block bg-Mwhite rounded-sm transition-all duration-500
+}
+
+.barIcon.active div:nth-child(1) {
+    @apply absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 rotate-45
+}
+
+.barIcon.active div:nth-child(2) {
+    @apply hidden
+}
+
+.barIcon.active div:nth-child(3) {
+    @apply absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 -rotate-45
+}
+
+.menuMobile {
+    @apply left-0 -top-[100vh] lg:hidden transition-all duration-500
+}
+
+.menuMobile.active {
+    @apply top-0
+}
+
+.bgDropPopup {
+    background: rgba(23, 23, 23, 0.08);
+    backdrop-filter: blur(4px);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.bkdropHead {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.00) 0%, rgba(255, 255, 255, 0.16) 100%);
+    backdrop-filter: blur(16px);
+}
+
+.sideLine>div::after {
+    content: "";
+    @apply absolute left-0 sm:left-[initial] sm:right-0 top-full sm:top-1/2 sm:-translate-y-1/2 w-full sm:w-[1px] h-[1px] sm:h-full bg-[#E5E5E5]
+}
+.sideLine>div {
+    @apply py-6 sm:py-0 sm:my-6
+}
+
+.sideLine>div:nth-of-type(even):after {
+    @apply sm:hidden lg:!block
+}
+
+.sideLine>div:last-child:after {
+    @apply !hidden
+}
+
+
+.sideLineGrid>div::after {
+    content: "";
+    @apply absolute right-0 top-1/2 -translate-y-1/2 w-[1px] h-full bg-[#E5E5E5]
+}
+
+.sideLineGrid>div:nth-of-type(even):after {
+    @apply hidden lg:!block
+}
+
+.sideLineGrid>div:last-child:after {
+    @apply !hidden
+}
+
+.phoneModFiled input.form-control {
+    @apply hidden
+}
+
+.phoneModFiled .flag-dropdown .selected-flag .flag .arrow {
+    @apply hidden
+}
+
+.phoneModFiled .flag-dropdown {
+    @apply !bg-transparent !border-hidden !rounded-none
+}
+
+.bgWrapHead {
+    background: radial-gradient(59.61% 59.61% at 50.00% 50.00%, rgba(23, 23, 23, 0.08) 0%, #171717 100%);
+}
+
+.paginationnCustom li a {
+    @apply text-Mblack border-none focus:bg-Mwhite focus:shadow-none rounded-full
+}
+
+.paginationnCustom li.active span {
+    @apply !bg-Mblue
+}
+
+.paginationnCustom li span {
+    @apply rounded-full
+}

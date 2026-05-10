@@ -1,0 +1,47 @@
+const jwt = require("jsonwebtoken");
+const User = require("../models/userModel");
+
+// Middleware pour vérifier le token
+const verifyToken = async (req, res, next) => {
+    try {
+        const token = req.header("Authorization") || req.headers.authorization;
+
+        console.log("Token reçu:", token); // Debugging the token received
+
+        if (!token) return res.status(401).json({ message: "Accès refusé, token manquant" });
+
+        const tokenWithoutBearer = token.replace("Bearer ", "").trim();
+        console.log("Token après nettoyage:", tokenWithoutBearer); // Debugging the cleaned token
+
+        const decoded = jwt.verify(tokenWithoutBearer, process.env.JWT_SECRET);
+        console.log("Token décodé:", decoded); // Debugging the decoded token
+
+        const userId = decoded.id || decoded._id || decoded.userId || decoded.sub;
+        if (!userId) {
+            return res.status(401).json({ message: "Invalid token", error: "User id missing from token" });
+        }
+
+        req.user = await User.findById(userId).select("-password");
+
+        if (!req.user) return res.status(401).json({ message: "Utilisateur non trouvé" });
+
+        req.user.id = String(req.user._id);
+
+        next();
+    } catch (error) {
+        console.error("JWT Error:", error.message); // Debugging the JWT error
+        res.status(401).json({ message: "Invalid token", error: error.message });
+    }
+};
+
+const verifyRole = (...roles) => {
+    return (req, res, next) => {
+        console.log("Role de l'utilisateur:", req.user.role); // Debugging the user's role
+        if (!req.user || !roles.includes(req.user.role)) {
+            return res.status(403).json({ message: "Access denied, insufficient authorization" });
+        }
+        next();
+    };
+};
+
+module.exports = { verifyToken, verifyRole };
