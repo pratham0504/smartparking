@@ -98,8 +98,7 @@ import React, {
       try {
         // Make the API request with proper parameters
         const response = await axios.get(
-          // Try the correct endpoint - remove /parkings if it's already in the base URL
-          `${getBackendUrl()}/parkings/api/parkings/nearby`,
+          `${getBackendUrl()}/api/parkings/nearby`,
           {
             params: {
               lat: latitude,
