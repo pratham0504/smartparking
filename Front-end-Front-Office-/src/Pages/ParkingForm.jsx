@@ -408,7 +408,7 @@ const validateForm = () => {
   
       // Submit to API
       const response = await axios.post(
-        `${getBackendUrl()}/parkings/submit`,
+        `${getBackendUrl()}/api/parkings/submit`,
         formData,
         {
           headers: {

@@ -176,7 +176,7 @@ const SignUp = () => {
 
     try {
       const response = await axios.post(
-        `${getBackendUrl()}/User/check-email`,
+        `${getBackendUrl()}/api/check-email`,
         { email }
       );
       if (response.data.exists) {
@@ -306,7 +306,7 @@ const SignUp = () => {
 
     try {
       const response = await axios.post(
-        `${getBackendUrl()}/User/signup`,
+        `${getBackendUrl()}/api/signup`,
         dataToSend
       );
       if (response && response.status === 200) {
@@ -325,7 +325,7 @@ const SignUp = () => {
 
   const loginAfterOTP = async (password) => {
     try {
-      const response = await axios.post(`${getBackendUrl()}/User/loginAfterSignUp`, {
+      const response = await axios.post(`${getBackendUrl()}/api/loginAfterSignUp`, {
         email: user.email,
         password: password
       });
@@ -347,7 +347,7 @@ const SignUp = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        `${getBackendUrl()}/User/verify-otp`,
+        `${getBackendUrl()}/api/verify-otp`,
         { 
           email: user.email, 
           otp: String(otpCode) 

@@ -20,7 +20,7 @@ const OTPModal = ({ show, handleClose, email, password }) => {
   const loginAfterOTP = async (password) => {
     try {
       console.log("Password:", password);
-      const response = await axios.post(`${getBackendUrl()}/User/loginAfterSignUp`, {
+      const response = await axios.post(`${getBackendUrl()}/api/loginAfterSignUp`, {
 
         email,
         password,
@@ -51,7 +51,7 @@ const OTPModal = ({ show, handleClose, email, password }) => {
 
     try {
       const response = await axios.post(
-        `${getBackendUrl()}/User/verify-otp`,
+        `${getBackendUrl()}/api/verify-otp`,
         { email, otp: String(otp) },
         { headers: { "Content-Type": "application/json" } }
       );

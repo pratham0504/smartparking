@@ -693,7 +693,7 @@ const Reservation = ({
       const token = localStorage.getItem('token');
       
       const response = await axios.get(
-        `${getBackendUrl()}/User/rfid-cards`,
+        `${getBackendUrl()}/api/rfid-cards`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       

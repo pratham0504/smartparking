@@ -36,7 +36,7 @@ const RFIDManagement = () => {
         return;
       }
       
-      const response = await fetch(`${getBackendUrl()}/User/rfid-cards`, {
+      const response = await fetch(`${getBackendUrl()}/api/rfid-cards`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -51,7 +51,7 @@ const RFIDManagement = () => {
       
       // Get default card from user profile
       const profileResponse = await fetch(
-        `${getBackendUrl()}/User/userProfile`,
+        `${getBackendUrl()}/api/userProfile`,
         {
           method: "GET",
           headers: {
@@ -96,7 +96,7 @@ const RFIDManagement = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${getBackendUrl()}/User/rfid-cards`, {
+      const response = await fetch(`${getBackendUrl()}/api/rfid-cards`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -133,7 +133,7 @@ const RFIDManagement = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${getBackendUrl()}/User/rfid-cards/${cardId}/toggle`,
+        `${getBackendUrl()}/api/rfid-cards/${cardId}/toggle`,
         {
           method: "PUT",
           headers: {
@@ -163,7 +163,7 @@ const RFIDManagement = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${getBackendUrl()}/User/rfid-cards/${cardId}`,
+        `${getBackendUrl()}/api/rfid-cards/${cardId}`,
         {
           method: "DELETE",
           headers: {
@@ -196,7 +196,7 @@ const RFIDManagement = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${getBackendUrl()}/User/rfid-cards/${cardId}/set-default`,
+        `${getBackendUrl()}/api/rfid-cards/${cardId}/set-default`,
         {
           method: "PUT",
           headers: {
@@ -247,7 +247,7 @@ const RFIDManagement = () => {
           for (const scan of unlinkedScans) {
             try {
               // Register card to current user
-              const resp = await fetch(`${getBackendUrl()}/User/rfid-cards`, {
+              const resp = await fetch(`${getBackendUrl()}/api/rfid-cards`, {
                 method: "POST",
                 headers: {
                   Authorization: `Bearer ${token}`,
@@ -509,7 +509,7 @@ const RFIDManagement = () => {
                             return;
                           }
 
-                          const resp = await fetch(`${getBackendUrl()}/User/rfid-cards`, {
+                          const resp = await fetch(`${getBackendUrl()}/api/rfid-cards`, {
                             method: 'POST',
                             headers: {
                               Authorization: `Bearer ${token}`,

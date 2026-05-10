@@ -95,7 +95,7 @@ const getUserProfile = async () => {
     const token = localStorage.getItem("token"); // Assure-toi que le token est stocké ici
     if (!token) throw new Error("No token found");
 
-    const response = await fetch(`${getBackendUrl()}/User/userProfile`, {
+    const response = await fetch(`${getBackendUrl()}/api/userProfile`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -132,7 +132,7 @@ const updateUserProfile = async (userData, token, image, password) => {
 
     if (password) formData.append("password", password);
 
-    const response = await fetch(`${getBackendUrl()}/User/profile`, {
+    const response = await fetch(`${getBackendUrl()}/api/profile`, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -277,7 +277,7 @@ const Profile = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${getBackendUrl()}/User/rfid-cards`, {
+      const response = await fetch(`${getBackendUrl()}/api/rfid-cards`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

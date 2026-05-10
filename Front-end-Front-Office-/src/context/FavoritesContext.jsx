@@ -24,7 +24,7 @@ export const FavoritesProvider = ({ children }) => {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('No token found');
 
-      const response = await axios.get(`${getBackendUrl()}/favorites`, {
+      const response = await axios.get(`${getBackendUrl()}/api/favorites`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -66,8 +66,8 @@ export const FavoritesProvider = ({ children }) => {
       if (isApiAvailable) {
         try {
           const endpoint = isFav 
-            ? `${getBackendUrl()}/favorites/remove/${parkingId}`
-            : `${getBackendUrl()}/favorites/add/${parkingId}`;
+            ? `${getBackendUrl()}/api/favorites/remove/${parkingId}`
+            : `${getBackendUrl()}/api/favorites/add/${parkingId}`;
           
           const method = isFav ? 'delete' : 'post';
           

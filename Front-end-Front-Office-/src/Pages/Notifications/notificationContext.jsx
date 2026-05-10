@@ -190,7 +190,7 @@ export const NotificationProvider = ({ children }) => {
       // Update parking spot if accepted
       if (response === 'accepted' && notification.reservationId.spotId) {
         await axios.patch(
-          `${getBackendUrl()}/parkings/${notification.reservationId.parkingId}/spots/${notification.reservationId.spotId}`,
+          `${getBackendUrl()}/api/parkings/${notification.reservationId.parkingId}/spots/${notification.reservationId.spotId}`,
           { status: 'reserved' },
           {
             headers: {

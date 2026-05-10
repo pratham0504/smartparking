@@ -129,7 +129,7 @@ const FaceAuth = () => {
     try {
       setStatus("Fetching registered user faces...");
       // Fetch users from your backend API using runtime backend URL
-      const response = await fetch(`${getBackendUrl()}/User/users/`);
+      const response = await fetch(`${getBackendUrl()}/api/users`);
       if (!response.ok) {
         throw new Error(
           `Failed to fetch users: ${response.status} ${response.statusText}`
@@ -450,7 +450,7 @@ const FaceAuth = () => {
                 let userData = null;
                 try {
                   const userResponse = await fetch(
-                    `${getBackendUrl()}/User/users/${recognizedUser.userId}`,
+                    `${getBackendUrl()}/api/users/${recognizedUser.userId}`,
                     {
                       headers: {
                         Authorization: `Bearer ${data.token}`,

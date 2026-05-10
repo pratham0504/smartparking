@@ -542,7 +542,7 @@ const PaymentSelection = ({ reservationId, reservation, onSuccess }) => {
       try {
         const token = localStorage.getItem("token");
         if (!token) return;
-        const resp = await fetch(`${getBackendUrl()}/api/users/userProfile`, {
+        const resp = await fetch(`${getBackendUrl()}/api/userProfile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!resp.ok) throw new Error("Failed to fetch user profile");
@@ -580,7 +580,7 @@ const PaymentSelection = ({ reservationId, reservation, onSuccess }) => {
         if (!resp.ok) throw new Error(data.message || "Wallet payment failed");
 
         // Refresh wallet balance
-        const profileResp = await fetch(`${getBackendUrl()}/api/users/userProfile`, {
+        const profileResp = await fetch(`${getBackendUrl()}/api/userProfile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (profileResp.ok) {

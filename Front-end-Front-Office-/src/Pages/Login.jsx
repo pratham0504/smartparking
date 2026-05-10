@@ -89,7 +89,7 @@ const Login = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        `${getBackendUrl()}/User/login-verify-otp`,
+        `${getBackendUrl()}/api/login-verify-otp`,
         {
           email,
           otp,

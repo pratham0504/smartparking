@@ -88,7 +88,7 @@ const LiveParkingStatus = ({ parkingId = null, parkingName = 'shah&anchor', read
 
             try {
                 const backend = getBackendUrl();
-                const resp = await axios.get(`${backend}/parkings/parkings/${parkingId}`);
+                const resp = await axios.get(`${backend}/api/parkings/${parkingId}`);
                 setParkingData(resp.data || null);
             } catch (err) {
                 console.warn('[LIVE-PARKING] Failed to load parking layout:', err?.message || err);

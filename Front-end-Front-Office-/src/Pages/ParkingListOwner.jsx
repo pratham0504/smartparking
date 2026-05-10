@@ -93,7 +93,7 @@ const ParkingListOwner = () => {
         return;
       }
 
-      const response = await axios.get(`${getBackendUrl()}/User/employees`, {
+      const response = await axios.get(`${getBackendUrl()}/api/employees`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

@@ -92,7 +92,7 @@ const ParkingReservationNotification = ({ notification, onMarkAsRead }) => {
 
       if (response === "accepted") {
         await axios.patch(
-          `${getBackendUrl()}/parkings/${reservation.parkingId}/spots/${reservation.spotId}`,
+          `${getBackendUrl()}/api/parkings/${reservation.parkingId}/spots/${reservation.spotId}`,
           { status: "reserved" },
           {
             headers: {
