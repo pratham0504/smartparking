@@ -2,19 +2,23 @@ import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import withRouter from "../../components/Common/withRouter";
 import { Card, CardBody, CardTitle, Col, Container, Row } from "reactstrap";
-//Import Breadcrumb
-import Breadcrumbs from "/src/components/Common/Breadcrumb";
+
+// Import Breadcrumb - FIXED: Changed from "/src/components..." to relative path
+import Breadcrumbs from "../../components/Common/Breadcrumb";
 import ReactApexChart from "react-apexcharts";
 
-import { getTasks as onGetTasks } from "/src/store/tasks/actions";
-import { options, series, recentTasksData } from "/src/common/data/tasks";
+// Redux actions - FIXED: Changed from "/src/store..." to relative path
+import { getTasks as onGetTasks } from "../../store/tasks/actions";
 
-//redux
+// Data - FIXED: Changed from "/src/common..." to relative path
+import { options, series, recentTasksData } from "../../common/data/tasks";
+
+// redux
 import { useSelector, useDispatch } from "react-redux";
 import { createSelector } from "reselect";
 
 const TasksList = () => {
-  //meta title
+  // meta title
   document.title = "Task List | Skote - Vite React Admin & Dashboard Template";
 
   const dispatch = useDispatch();
@@ -55,8 +59,8 @@ const TasksList = () => {
                                 <tr key={index}>
                                   <td style={{ width: "40px" }}>
                                     <div className="form-check font-size-16">
-                                      <input className="form-check-input" type="checkbox" id="upcomingtaskCheck01" />
-                                      <label className="form-check-label" htmlFor="upcomingtaskCheck01"></label>
+                                      <input className="form-check-input" type="checkbox" id={`upcomingtaskCheck${index}`} />
+                                      <label className="form-check-label" htmlFor={`upcomingtaskCheck${index}`}></label>
                                     </div>
                                   </td>
                                   <td>
@@ -65,8 +69,8 @@ const TasksList = () => {
                                   <td>
                                     <div className="avatar-group">
                                       {
-                                        card.userImages.map((userImg, index) => (
-                                          <div className="avatar-group-item" key={index}>
+                                        card.userImages.map((userImg, idx) => (
+                                          <div className="avatar-group-item" key={idx}>
                                             <Link to="#" className="d-inline-block">
                                               {userImg.img ?
                                                 <img src={userImg.img} alt="" className="rounded-circle avatar-xs" />
