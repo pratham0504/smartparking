@@ -4,6 +4,7 @@ import './LiveParkingStatus.css';
 import { io } from 'socket.io-client';
 import axios from 'axios';
 import { useAuth } from '../../AuthContext';
+import { getBackendUrl } from '../../utils/backend';
 
 const LiveParkingStatus = ({ parkingId = null, parkingName = 'shah&anchor', readOnly = true, title = 'Live Parking Status' }) => {
     const { token } = useAuth();
@@ -21,7 +22,7 @@ const LiveParkingStatus = ({ parkingId = null, parkingName = 'shah&anchor', read
 
     useEffect(() => {
         // Connect to Socket.IO server for realtime slot updates
-        const socketUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3001';
+        const socketUrl = getBackendUrl();
         const socket = io(socketUrl, { transports: ['websocket', 'polling'] });
 
         socket.on('connect', () => {
@@ -86,7 +87,7 @@ const LiveParkingStatus = ({ parkingId = null, parkingName = 'shah&anchor', read
             }
 
             try {
-                const backend = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3001';
+                const backend = getBackendUrl();
                 const resp = await axios.get(`${backend}/parkings/parkings/${parkingId}`);
                 setParkingData(resp.data || null);
             } catch (err) {
@@ -109,7 +110,7 @@ const LiveParkingStatus = ({ parkingId = null, parkingName = 'shah&anchor', read
 
             setBusySlot(slot.slotNumber);
 
-            const backend = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3001';
+            const backend = getBackendUrl();
             await axios.put(
                 `${backend}/api/slots/${slot.slotNumber}`,
                 {

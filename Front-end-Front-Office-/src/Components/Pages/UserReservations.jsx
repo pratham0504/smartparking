@@ -7,6 +7,7 @@ import { useMapbox } from "../../context/MapboxContext";
 import { toast } from 'react-toastify';
 import MapModal from '../Modals/MapModal';
 import { io } from 'socket.io-client';
+import { getBackendUrl } from '../../utils/backend';
 
 const UserReservations = () => {
     const [reservations, setReservations] = useState([]);
@@ -32,7 +33,7 @@ const UserReservations = () => {
                 }
 
                 const response = await axios.get(
-                    'http://localhost:3001/api/reservations/my-reservations',
+                    `${getBackendUrl()}/api/reservations/my-reservations`,
                     {
                         headers: { 
                             'Authorization': `Bearer ${token}`,
@@ -66,7 +67,7 @@ const UserReservations = () => {
     }, []);
 
     useEffect(() => {
-        const socket = io(process.env.REACT_APP_BACKEND_URL || process.env.VITE_BACKEND_URL || 'http://localhost:3001');
+        const socket = io(getBackendUrl());
         socketRef.current = socket;
 
         const token = localStorage.getItem('token');
@@ -241,7 +242,7 @@ const UserReservations = () => {
 
          
             const response = await axios.delete(
-                `http://localhost:3001/api/${reservationId}`,
+                `${getBackendUrl()}/api/${reservationId}`,
                 {
                     headers: { 
                         'Authorization': `Bearer ${token}`,

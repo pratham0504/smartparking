@@ -2,6 +2,7 @@
 import React, { createContext, useState, useEffect, useContext, useRef } from 'react';
 import axios from 'axios';
 import { io } from 'socket.io-client';
+import { getBackendUrl } from '../../utils/backend';
 
 // Create the context
 const NotificationContext = createContext();
@@ -30,7 +31,7 @@ export const NotificationProvider = ({ children }) => {
       if (!token) return;
 
       const response = await axios.get(
-        `http://localhost:3001/api/notifications/unread-count`,
+        `${getBackendUrl()}/api/notifications/unread-count`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -63,7 +64,7 @@ export const NotificationProvider = ({ children }) => {
       });
 
       const response = await axios.get(
-        `http://localhost:3001/api/notifications/all?${params}`,
+        `${getBackendUrl()}/api/notifications/all?${params}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -95,7 +96,7 @@ export const NotificationProvider = ({ children }) => {
     try {
       const token = localStorage.getItem('token');
       await axios.patch(
-        `http://localhost:3001/api/notifications/${notificationId}/read`,
+        `${getBackendUrl()}/api/notifications/${notificationId}/read`,
         {},
         {
           headers: {
@@ -124,7 +125,7 @@ export const NotificationProvider = ({ children }) => {
       }
 
       await axios.patch(
-        'http://localhost:3001/api/notifications/read-all',
+        `${getBackendUrl()}/api/notifications/read-all`,
         {},
         {
           headers: {
@@ -156,7 +157,7 @@ export const NotificationProvider = ({ children }) => {
 
       // Update reservation status
       await axios.put(
-        `http://localhost:3001/api/reservations/${notification.reservationId._id}/status`,
+        `${getBackendUrl()}/api/reservations/${notification.reservationId._id}/status`,
         { status: response },
         {
           headers: {
@@ -189,7 +190,7 @@ export const NotificationProvider = ({ children }) => {
       // Update parking spot if accepted
       if (response === 'accepted' && notification.reservationId.spotId) {
         await axios.patch(
-          `http://localhost:3001/parkings/${notification.reservationId.parkingId}/spots/${notification.reservationId.spotId}`,
+          `${getBackendUrl()}/parkings/${notification.reservationId.parkingId}/spots/${notification.reservationId.spotId}`,
           { status: 'reserved' },
           {
             headers: {
@@ -212,7 +213,7 @@ export const NotificationProvider = ({ children }) => {
     loadUnreadCount();
     
     // Initialize socket
-    socketRef.current = io(process.env.REACT_APP_BACKEND_URL || process.env.VITE_BACKEND_URL || 'http://localhost:3001');
+    socketRef.current = io(getBackendUrl());
     socketRef.current.emit('authenticate', token);
 
     // Listen for new notifications

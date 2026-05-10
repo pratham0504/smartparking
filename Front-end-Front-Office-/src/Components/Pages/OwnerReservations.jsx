@@ -5,6 +5,7 @@ import { format } from 'date-fns';
 import enUS from 'date-fns/locale/en-US';
 import { toast } from 'react-toastify';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getBackendUrl } from '../../utils/backend';
 
 const OwnerReservations = () => {
     const [reservations, setReservations] = useState([]);
@@ -55,7 +56,7 @@ const OwnerReservations = () => {
             }
 
             const response = await axios.get(
-                'http://localhost:3001/api/owner-reservations',
+                `${getBackendUrl()}/api/owner-reservations`,
                 {
                     headers: { 
                         'Authorization': `Bearer ${token}`,
@@ -109,7 +110,7 @@ const OwnerReservations = () => {
             }
 
             await axios.put(
-                `http://localhost:3001/api/owner-reservations/${reservationId}/status`,
+                `${getBackendUrl()}/api/owner-reservations/${reservationId}/status`,
                 { status: newStatus },
                 {
                     headers: { 

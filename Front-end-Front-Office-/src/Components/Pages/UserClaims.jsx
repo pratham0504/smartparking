@@ -3,6 +3,7 @@ import axios from 'axios';
 import { format } from 'date-fns';
 import { enUS } from 'date-fns/locale';
 import { toast } from 'react-toastify';
+import { getBackendUrl } from '../../utils/backend';
 
 const UserClaims = () => {
     const [claims, setClaims] = useState([]);
@@ -26,7 +27,7 @@ const UserClaims = () => {
             }
 
             const response = await axios.get(
-                'http://localhost:3001/api/driver-claims',
+                `${getBackendUrl()}/api/driver-claims`,
                 {
                     headers: { 
                         'Authorization': `Bearer ${token}`,
@@ -60,7 +61,7 @@ const UserClaims = () => {
             }
 
             await axios.delete(
-                `http://localhost:3001/api/claims/${claimToDelete}`,
+                `${getBackendUrl()}/api/claims/${claimToDelete}`,
                 {
                     headers: { 
                         'Authorization': `Bearer ${token}`,

@@ -7,6 +7,7 @@ import DatePicker, { registerLocale } from "react-datepicker";
 import enIN from "date-fns/locale/en-IN";
 import { io } from "socket.io-client";
 import "react-datepicker/dist/react-datepicker.css";
+import { getBackendUrl } from "../../utils/backend";
 
 // Register English (India) locale
 registerLocale("en-IN", enIN);
@@ -443,7 +444,7 @@ const ParkingLiveView = ({ parkingId: propParkingId }) => {
     setIsLoading(true);
     try {
       const response = await axios.get(
-        `http://localhost:3001/api/reservations/by-spot?parkingId=${parkingId}&spotId=${id}`
+        `${getBackendUrl()}/api/reservations/by-spot?parkingId=${parkingId}&spotId=${id}`
       );
 
       if (response.data?.length > 0) {
@@ -630,7 +631,7 @@ const ParkingLiveView = ({ parkingId: propParkingId }) => {
   }, [parkingId]);
 
   useEffect(() => {
-    const socket = io(process.env.REACT_APP_BACKEND_URL || process.env.VITE_BACKEND_URL || "http://localhost:3001");
+    const socket = io(getBackendUrl());
     socketRef.current = socket;
 
     const token = localStorage.getItem("token");
@@ -767,14 +768,14 @@ const ParkingLiveView = ({ parkingId: propParkingId }) => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `http://localhost:3001/parkings/parkings/${parkingId}`
+        `${getBackendUrl()}/parkings/parkings/${parkingId}`
       );
       const parkingData = response.data;
 
       const formattedSpots = await Promise.all(parkingData.spots.map(async (spot) => {
         // Pour chaque spot, vérifier les réservations actives à la date sélectionnée
         const reservationResponse = await axios.get(
-          `http://localhost:3001/api/reservations/by-spot?parkingId=${parkingId}&spotId=${spot.id}`
+          `${getBackendUrl()}/api/reservations/by-spot?parkingId=${parkingId}&spotId=${spot.id}`
         );
         
         // Convertir la date sélectionnée en timestamp pour comparaison
@@ -926,7 +927,7 @@ const ParkingLiveView = ({ parkingId: propParkingId }) => {
 
       // Send the PATCH request to update the spot status in the database
       await axios.patch(
-        `http://localhost:3001/parkings/${parkingId}/spots/${id}`,
+        `${getBackendUrl()}/parkings/${parkingId}/spots/${id}`,
         spotData,
         config
       );

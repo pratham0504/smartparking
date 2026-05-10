@@ -20,6 +20,7 @@ import React, {
   import { useSearch } from "../context/SearchContext";
   import { useMapbox } from "../context/MapboxContext";
   import axios from "axios";
+  import { getBackendUrl } from "../utils/backend";
   
   const Homepage = () => {
     const navigate = useNavigate();
@@ -98,7 +99,7 @@ import React, {
         // Make the API request with proper parameters
         const response = await axios.get(
           // Try the correct endpoint - remove /parkings if it's already in the base URL
-          `http://localhost:3001/parkings/api/parkings/nearby`,
+          `${getBackendUrl()}/parkings/api/parkings/nearby`,
           {
             params: {
               lat: latitude,

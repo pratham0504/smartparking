@@ -5,6 +5,7 @@ import { Col, Container, Form, Row, Alert } from 'react-bootstrap';
 import axios from 'axios';
 import { useAuth } from '../AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { getBackendUrl } from '../utils/backend';
 
 // Contact page with manual license plate entry support
 
@@ -268,7 +269,7 @@ const Contact = () => {
 
         try {
             const response = await axios.post(
-                'http://localhost:3001/api/claims',
+                `${getBackendUrl()}/api/claims`,
                 formData,
                 {
                     headers: {

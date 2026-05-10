@@ -7,6 +7,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./FaceAuth.css";
 import { AuthContext } from "../../AuthContext";
+import { getBackendUrl } from "../../utils/backend";
 
 const FaceAuth = () => {
   const videoRef = useRef(null);
@@ -421,7 +422,7 @@ const FaceAuth = () => {
               setLoading(true);
 
               const response = await fetch(
-                "http://localhost:3001/auth/getToken",
+                `${getBackendUrl()}/auth/getToken`,
                 {
                   method: "POST",
                   headers: {
@@ -449,7 +450,7 @@ const FaceAuth = () => {
                 let userData = null;
                 try {
                   const userResponse = await fetch(
-                    `http://localhost:3001/User/users/${recognizedUser.userId}`,
+                    `${getBackendUrl()}/User/users/${recognizedUser.userId}`,
                     {
                       headers: {
                         Authorization: `Bearer ${data.token}`,

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useDrag } from "react-dnd";
 import { ItemTypes } from "./Editeur/ItemType";
 import axios from "axios"; // Assurez-vous d'importer axios
+import { getBackendUrl } from "../utils/backend";
 
 const ReservationPopup = ({ reservation, onClose, position }) => {
   // Format dates (use Indian English locale)
@@ -170,7 +171,7 @@ const ParkingSpot = ({
 
       // Requête avec le token dans les headers et URL corrigée
       const response = await axios.get(
-        `http://localhost:3001/api/reservations/by-spot?parkingId=${parkingId}&spotId=${id}`,
+        `${getBackendUrl()}/api/reservations/by-spot?parkingId=${parkingId}&spotId=${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

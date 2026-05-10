@@ -6,6 +6,7 @@ import enIN from 'date-fns/locale/en-IN';
 import { toast } from 'react-toastify';
 import { motion, AnimatePresence } from 'framer-motion';
 import UpdateClaimModal from '../UI/Modal/UpdateClaimModal';
+import { getBackendUrl } from '../../utils/backend';
 
 
 // Import the CSS module
@@ -695,7 +696,7 @@ const OwnerClaims = () => {
             }
 
             const response = await axios.get(
-                'http://localhost:3001/api/owner-claims',
+                `${getBackendUrl()}/api/owner-claims`,
                 {
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -753,7 +754,7 @@ const OwnerClaims = () => {
 
             const response = await axios({
                 method: 'put',
-                url: `http://localhost:3001/api/owner-claims/${claim._id}/status`,
+                url: `${getBackendUrl()}/api/owner-claims/${claim._id}/status`,
                 data: {
                     status: newStatus,
                     message: statusMessage || `Claim has been marked as ${newStatus}`

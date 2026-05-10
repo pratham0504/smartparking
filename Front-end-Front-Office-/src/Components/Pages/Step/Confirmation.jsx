@@ -21,6 +21,7 @@ import {
   Download,
 } from "lucide-react";
 import QRCode from "qrcode";
+import { getBackendUrl } from "../../../utils/backend";
 
 // Initialize Stripe (only if publishable key is provided)
 const stripePublicKey = process.env.REACT_APP_STRIPE_PUBLIC_KEY || null;
@@ -128,7 +129,7 @@ const RazorpayPayment = ({ reservation, onSuccess }) => {
 
       // Create order on backend
       const response = await fetch(
-        "http://localhost:3001/api/payments/razorpay/create-order",
+        `${getBackendUrl()}/api/payments/razorpay/create-order`,
         {
           method: "POST",
           headers: {
@@ -158,7 +159,7 @@ const RazorpayPayment = ({ reservation, onSuccess }) => {
           try {
             // Verify payment on backend
             const verifyResponse = await fetch(
-              "http://localhost:3001/api/payments/razorpay/verify",
+              `${getBackendUrl()}/api/payments/razorpay/verify`,
               {
                 method: "POST",
                 headers: {
@@ -305,7 +306,7 @@ const PaymentForm = ({ reservationId, reservation, onSuccess }) => {
     const token = localStorage.getItem("token");
     try {
       const response = await fetch(
-        `http://localhost:3001/api/reservations/${reservationId}/statusPayment`,
+        `${getBackendUrl()}/api/reservations/${reservationId}/statusPayment`,
         {
           method: "PUT",
           headers: {
@@ -338,7 +339,7 @@ const PaymentForm = ({ reservationId, reservation, onSuccess }) => {
           const token = localStorage.getItem("token");
           // Send the converted price (divided by 3) to the backend
           const response = await fetch(
-            "http://localhost:3001/api/payments/stripe/create-payment-intent",
+            `${getBackendUrl()}/api/payments/stripe/create-payment-intent`,
             {
               method: "POST",
               headers: {
@@ -388,7 +389,7 @@ const PaymentForm = ({ reservationId, reservation, onSuccess }) => {
       } else if (paymentIntent.status === "succeeded") {
         const token = localStorage.getItem("token");
         const confirmResponse = await fetch(
-          "http://localhost:3001/api/payments/confirm-payment",
+          `${getBackendUrl()}/api/payments/confirm-payment`,
           {
             method: "POST",
             headers: {

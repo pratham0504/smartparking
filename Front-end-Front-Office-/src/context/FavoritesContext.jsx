@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { getBackendUrl } from '../utils/backend';
 
 const FavoritesContext = createContext();
 
@@ -23,7 +24,7 @@ export const FavoritesProvider = ({ children }) => {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('No token found');
 
-      const response = await axios.get('http://localhost:3001/favorites', {
+      const response = await axios.get(`${getBackendUrl()}/favorites`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -65,8 +66,8 @@ export const FavoritesProvider = ({ children }) => {
       if (isApiAvailable) {
         try {
           const endpoint = isFav 
-            ? `http://localhost:3001/favorites/remove/${parkingId}`
-            : `http://localhost:3001/favorites/add/${parkingId}`;
+            ? `${getBackendUrl()}/favorites/remove/${parkingId}`
+            : `${getBackendUrl()}/favorites/add/${parkingId}`;
           
           const method = isFav ? 'delete' : 'post';
           

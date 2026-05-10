@@ -12,16 +12,11 @@ import reportWebVitals from "./reportWebVitals";
 
 const getBackendUrl = () => {
   const runtimeConfig = typeof window !== "undefined" ? window.RUNTIME_CONFIG : undefined;
-
-  // Detect if we are running locally or in production
-  const isLocalhost = typeof window !== "undefined" && window.location.hostname === "localhost";
-  const defaultUrl = isLocalhost ? "http://localhost:3001" : "https://smartparking-f86d.onrender.com";
-
   return (
     process.env.REACT_APP_BACKEND_URL ||
     process.env.VITE_BACKEND_URL ||
     runtimeConfig?.BACKEND_URL ||
-    defaultUrl
+    "http://localhost:3001"
   ).replace(/\/$/, "");
 };
 

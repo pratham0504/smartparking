@@ -3,8 +3,9 @@ import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import { Trash2, Plus, AlertCircle, CheckCircle, ScanLine } from 'lucide-react';
 import './RFIDManagement.css';
+import { getBackendUrl } from '../../utils/backend';
 
-const API_URL = "http://localhost:3001/api";
+const API_URL = `${getBackendUrl()}/api`;
 
 /**
  * HELPER: Converts raw EM-18 output to a standard format.

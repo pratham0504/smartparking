@@ -10,6 +10,7 @@ import {
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { io } from "socket.io-client";
+import { getBackendUrl } from "../../utils/backend";
 
 const ParkingReservationNotification = ({ notification, onMarkAsRead }) => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -32,7 +33,7 @@ const ParkingReservationNotification = ({ notification, onMarkAsRead }) => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        `http://localhost:3001/api/reservations/by-spot?parkingId=${parking._id}&spotId=${reservation.spotId}`,
+        `${getBackendUrl()}/api/reservations/by-spot?parkingId=${parking._id}&spotId=${reservation.spotId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -78,7 +79,7 @@ const ParkingReservationNotification = ({ notification, onMarkAsRead }) => {
       const token = localStorage.getItem("token");
 
       await axios.put(
-        `http://localhost:3001/api/reservations/${reservation._id}/status`,
+        `${getBackendUrl()}/api/reservations/${reservation._id}/status`,
         { status: response },
         {
           headers: {
@@ -91,7 +92,7 @@ const ParkingReservationNotification = ({ notification, onMarkAsRead }) => {
 
       if (response === "accepted") {
         await axios.patch(
-          `http://localhost:3001/parkings/${reservation.parkingId}/spots/${reservation.spotId}`,
+          `${getBackendUrl()}/parkings/${reservation.parkingId}/spots/${reservation.spotId}`,
           { status: "reserved" },
           {
             headers: {
@@ -457,7 +458,7 @@ const NotificationList = () => {
       });
 
       const response = await axios.get(
-        `http://localhost:3001/api/notifications/all?${params}`,
+        `${getBackendUrl()}/api/notifications/all?${params}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -488,7 +489,7 @@ const NotificationList = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.patch(
-        `http://localhost:3001/api/notifications/${notificationId}/read`,
+        `${getBackendUrl()}/api/notifications/${notificationId}/read`,
         {},
         {
           headers: {
@@ -549,7 +550,7 @@ const NotificationList = () => {
   }, [page]);
 
   useEffect(() => {
-    socketRef.current = io(process.env.REACT_APP_BACKEND_URL || process.env.VITE_BACKEND_URL || "http://localhost:3001");
+    socketRef.current = io(getBackendUrl());
     const token = localStorage.getItem("token");
 
     if (token) {
@@ -636,7 +637,7 @@ const NotificationList = () => {
       }
 
       await axios.patch(
-        "http://localhost:3001/api/notifications/read-all",
+        `${getBackendUrl()}/api/notifications/read-all`,
         {},
         {
           headers: {
@@ -722,7 +723,7 @@ const NotificationBadge = ({ onClick }) => {
       if (!token) return;
 
       const response = await axios.get(
-        `http://localhost:3001/api/notifications/unread-count`,
+        `${getBackendUrl()}/api/notifications/unread-count`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -740,7 +741,7 @@ const NotificationBadge = ({ onClick }) => {
   };
 
   useEffect(() => {
-    socketRef.current = io(process.env.REACT_APP_BACKEND_URL || process.env.VITE_BACKEND_URL || "http://localhost:3001");
+    socketRef.current = io(getBackendUrl());
     const token = localStorage.getItem("token");
 
     if (token) {
