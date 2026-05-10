@@ -549,7 +549,7 @@ const NotificationList = () => {
   }, [page]);
 
   useEffect(() => {
-    socketRef.current = io("http://localhost:3001");
+    socketRef.current = io(process.env.REACT_APP_BACKEND_URL || process.env.VITE_BACKEND_URL || "http://localhost:3001");
     const token = localStorage.getItem("token");
 
     if (token) {
@@ -740,7 +740,7 @@ const NotificationBadge = ({ onClick }) => {
   };
 
   useEffect(() => {
-    socketRef.current = io("http://localhost:3001");
+    socketRef.current = io(process.env.REACT_APP_BACKEND_URL || process.env.VITE_BACKEND_URL || "http://localhost:3001");
     const token = localStorage.getItem("token");
 
     if (token) {

@@ -66,7 +66,7 @@ const UserReservations = () => {
     }, []);
 
     useEffect(() => {
-        const socket = io('http://localhost:3001');
+        const socket = io(process.env.REACT_APP_BACKEND_URL || process.env.VITE_BACKEND_URL || 'http://localhost:3001');
         socketRef.current = socket;
 
         const token = localStorage.getItem('token');

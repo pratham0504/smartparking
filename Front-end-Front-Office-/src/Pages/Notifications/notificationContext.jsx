@@ -212,7 +212,7 @@ export const NotificationProvider = ({ children }) => {
     loadUnreadCount();
     
     // Initialize socket
-    socketRef.current = io('http://localhost:3001');
+    socketRef.current = io(process.env.REACT_APP_BACKEND_URL || process.env.VITE_BACKEND_URL || 'http://localhost:3001');
     socketRef.current.emit('authenticate', token);
 
     // Listen for new notifications

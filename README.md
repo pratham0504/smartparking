@@ -8,6 +8,15 @@ parkEz is an all-in-one smart parking management web application designed to str
 
 🔗 **Try it Live**: [front-end-front-office.vercel.app](https://front-end-front-office.vercel.app)
 
+### Vercel Frontend Deploy
+
+For the Vercel frontend, set these environment variables in the project settings:
+
+- `REACT_APP_BACKEND_URL` to your deployed backend API base URL
+- `REACT_APP_MAPBOX_TOKEN` and `VITE_MAPBOX_TOKEN` for map rendering
+
+The frontend now rewrites API and socket calls to the configured backend URL at runtime, so it can run against a separately deployed backend connected to MongoDB Atlas.
+
 ## 💡 About parkEz
 
 parkEz is a modern full-stack solution that includes:
