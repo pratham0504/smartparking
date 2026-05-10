@@ -268,7 +268,8 @@ app.use("/api", reportRoutes);
 app.use("/api", reservationRoutes);
 app.use("/api", subscriptionRoutes);
 app.use("/api", passwordRoutes);
-app.use('/parkings', parkingRoutes); 
+// Mount parking routes under /api so frontend can call /api/parkings/*
+app.use('/api', parkingRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use('/api/notify', notificationRoutes);
 app.use('/favorites', favoriteRoutes);
