@@ -374,7 +374,7 @@ const ParkingEditForm = ({ editingParking, setEditingParking, refreshParkings })
       console.log("📌 Données envoyées :", data);
 
       const response = await axios.put(
-        `${getBackendUrl()}/parkings/parkings/${editingParking._id}`,
+        `${getBackendUrl()}/api/parkings/${editingParking._id}`,
         data,
         {
           headers: {

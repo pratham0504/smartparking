@@ -462,7 +462,7 @@ const SecLocation = () => {
     try {
       // Récupération des données complètes du parking
       const response = await axios.get(
-        `${getBackendUrl()}/parkings/parkings/${parking.id}`
+        `${getBackendUrl()}/api/parkings/${parking.id}`
       );
       const fullParkingData = response.data;
 
@@ -490,7 +490,7 @@ const SecLocation = () => {
         setLoading(true);
         console.log("Fetching parkings from API...");
         const response = await axios.get(
-          `${getBackendUrl()}/parkings/parkings`
+          `${getBackendUrl()}/api/parkings`
         );
         console.log("API response:", response.data);
 
@@ -980,7 +980,7 @@ const SecLocation = () => {
       setError(null);
 
       const response = await axios.get(
-        `${getBackendUrl()}/parkings/parkings`
+        `${getBackendUrl()}/api/parkings`
       );
       const allParkings = response.data;
 
@@ -1111,7 +1111,7 @@ const SecLocation = () => {
     try {
       // Fetch complete parking data from API
       const response = await axios.get(
-        `${getBackendUrl()}/parkings/parkings/${parking.id}`
+        `${getBackendUrl()}/api/parkings/${parking.id}`
       );
       setSelectedParking(response.data);
       setShowPopup(true);

@@ -486,7 +486,7 @@ const ParkingPlan2D = ({
     try {
       setLoading(true);
       const response = await axios.get(
-        `${getBackendUrl()}/parkings/parkings/${parkingId}`
+        `${getBackendUrl()}/api/parkings/${parkingId}`
       );
       const parkingData = response.data;
 

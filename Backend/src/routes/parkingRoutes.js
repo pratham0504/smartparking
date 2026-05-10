@@ -221,7 +221,7 @@ router.put("/requests/:id", upload, async (req, res) => {
 });
 
 router.patch("/:id", saveParking3D);
-router.get("/api/parkings/nearby", async (req, res) => {
+router.get("/parkings/nearby", async (req, res) => {
   try {
     const { lat, lng, limit } = req.query;
     if (!lat || !lng) {

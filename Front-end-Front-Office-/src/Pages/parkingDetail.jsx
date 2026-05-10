@@ -30,7 +30,7 @@ const ParkingDetails = () => {
     
 
     useEffect(() => {
-        axios.get(`${getBackendUrl()}/parkings/parkings/${id}`)
+        axios.get(`${getBackendUrl()}/api/parkings/${id}`)
             .then(response => {
                 setParking(response.data);
                 setLoading(false);

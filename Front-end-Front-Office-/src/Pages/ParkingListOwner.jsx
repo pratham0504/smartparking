@@ -33,7 +33,7 @@ const ParkingListOwner = () => {
 
       console.log("Sending request to fetch parkings..."); 
       const response = await axios.get(
-        `${getBackendUrl()}/parkings/my-parkings`,
+        `${getBackendUrl()}/api/parkings/my-parkings`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -62,7 +62,7 @@ const ParkingListOwner = () => {
     const promises = parkings.map(async (parking) => {
       try {
         await axios.get(
-          `${getBackendUrl()}/parkings/check-pending/${parking._id}`
+          `${getBackendUrl()}/api/parkings/check-pending/${parking._id}`
         );
         // If request succeeds, there is no pending request
         pendingStatus[parking._id] = false;
@@ -116,7 +116,7 @@ const ParkingListOwner = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.put(
-        `${getBackendUrl()}/parkings/assign-employee/${parkingId}/${selectedEmployee}`,
+        `${getBackendUrl()}/api/parkings/assign-employee/${parkingId}/${selectedEmployee}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -132,7 +132,7 @@ const ParkingListOwner = () => {
     try {
       // Check if there is already a pending request
       const response = await axios.get(
-        `${getBackendUrl()}/parkings/check-pending/${parking._id}`
+        `${getBackendUrl()}/api/parkings/check-pending/${parking._id}`
       );
 
       if (response.status === 200) {
@@ -158,7 +158,7 @@ const ParkingListOwner = () => {
     if (window.confirm("Do you really want to remove this parking lot?")) {
       try {
         const token = localStorage.getItem("token");
-        await axios.delete(`${getBackendUrl()}/parkings/parkings/${id}`, {
+        await axios.delete(`${getBackendUrl()}/api/parkings/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

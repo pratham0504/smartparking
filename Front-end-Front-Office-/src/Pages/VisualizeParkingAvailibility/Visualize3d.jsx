@@ -23,7 +23,7 @@ const Visualize3d = ({ parkingId: propParkingId }) => {
       try {
         setLoading(true);
         const response = await axios.get(
-          `${getBackendUrl()}/parkings/parkings/${parkingId}`
+          `${getBackendUrl()}/api/parkings/${parkingId}`
         );
         setParkingData(response.data);
         setLoading(false);

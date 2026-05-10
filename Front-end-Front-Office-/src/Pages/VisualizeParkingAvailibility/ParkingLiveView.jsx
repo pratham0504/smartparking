@@ -768,7 +768,7 @@ const ParkingLiveView = ({ parkingId: propParkingId }) => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `${getBackendUrl()}/parkings/parkings/${parkingId}`
+        `${getBackendUrl()}/api/parkings/${parkingId}`
       );
       const parkingData = response.data;
 

@@ -112,7 +112,7 @@ const ParkingPlan = ({ parkingId: propParkingId }) => {
   const loadParkingData = async () => {
     try {
       const response = await axios.get(
-        `${getBackendUrl()}/parkings/parkings/${parkingId}`
+        `${getBackendUrl()}/api/parkings/${parkingId}`
       );
       const parkingData = response.data;
       console.log("parkiiing data ", parkingData);

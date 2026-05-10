@@ -163,7 +163,7 @@ const Parking =({ formData, setFormData }) =>{
   // Fetch parking list from the API
   useEffect(() => {
     setLoading(true); // Set loading state to true
-    axios.get(`${getBackendUrl()}/parkings/parkings`, {
+    axios.get(`${getBackendUrl()}/api/parkings`, {
       headers: {
 
         'Authorization': `Bearer ${getToken()}`
@@ -279,7 +279,7 @@ const Parking =({ formData, setFormData }) =>{
     });
   
     setLoading(true);
-    axios.post(`${getBackendUrl()}/parkings/submit`, formData, {
+    axios.post(`${getBackendUrl()}/api/parkings/submit`, formData, {
       headers: { 'Authorization': `Bearer ${getToken()}` }
     })
     .then(() => {
@@ -356,7 +356,7 @@ const Parking =({ formData, setFormData }) =>{
   const deleteParking = (id) => {
     if (window.confirm("Are you sure you want to delete this parking?")) {
       setLoading(true); // Set loading state while deleting
-      axios.delete(`/parkings/parkings/${id}`, {
+      axios.delete(`${getBackendUrl()}/api/parkings/${id}`, {
         headers: {
           'Authorization': `Bearer ${getToken()}`
         }

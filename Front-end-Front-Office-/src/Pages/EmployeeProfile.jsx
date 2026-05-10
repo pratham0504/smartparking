@@ -108,7 +108,7 @@ const EmployeeParkingScanner = () => {
   const fetchEmployeeParkings = async (employeeId, token) => {
     try {
       // Update this URL to match your backend API endpoint structure
-      const url = `${getBackendUrl()}/parkings/parkings-by-employee/${employeeId}`;
+      const url = `${getBackendUrl()}/api/parkings-by-employee/${employeeId}`;
       // Or, if your API uses query parameters instead:
       // const url = `http://localhost:3001/parkings?id_employee=${employeeId}`;
 
@@ -291,7 +291,7 @@ const EmployeeParkingScanner = () => {
       if (!token) throw new Error("Authentication token not found");
 
       // Using the endpoint you provided
-      const url = `${getBackendUrl()}/parkings/update-total-spots/${parkingId}`;
+      const url = `${getBackendUrl()}/api/parkings/update-total-spots/${parkingId}`;
       const response = await fetch(url, {
         method: "PATCH",
         headers: {

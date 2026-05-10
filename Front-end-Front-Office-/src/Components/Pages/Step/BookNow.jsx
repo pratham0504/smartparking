@@ -256,7 +256,7 @@ const BookNow = ({ parkingData, onContinue }) => {
     }
 
     if (id) {
-        axios.get(`${getBackendUrl()}/parkings/parkings/${id}`)
+        axios.get(`${getBackendUrl()}/api/parkings/${id}`)
             .then(response => {
                 console.log("📥 Données reçues depuis l'API:", response.data);
 
