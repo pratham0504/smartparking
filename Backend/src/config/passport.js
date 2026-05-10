@@ -2,14 +2,41 @@ const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const User = require("../models/userModel"); // Import User model
 
+function isLocalHostUrl(value) {
+    if (!value || typeof value !== "string") {
+        return false;
+    }
+
+    try {
+        const parsed = new URL(value);
+        return (
+            parsed.hostname === "localhost" ||
+            parsed.hostname === "127.0.0.1" ||
+            parsed.hostname.endsWith(".local") ||
+            /^10\./.test(parsed.hostname) ||
+            /^192\.168\./.test(parsed.hostname) ||
+            /^172\.(1[6-9]|2\d|3[0-1])\./.test(parsed.hostname)
+        );
+    } catch {
+        return false;
+    }
+}
+
+function resolveGoogleCallbackUrl() {
+    const configuredUrl = process.env.GOOGLE_CALLBACK_URL;
+
+    if (configuredUrl && /https?:\/\//.test(configuredUrl) && !isLocalHostUrl(configuredUrl)) {
+        return configuredUrl;
+    }
+
+    return "/auth/google/callback";
+}
+
 // Register Google OAuth strategy only if credentials are provided.
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
     // Use an explicit absolute callback URL only if a valid HTTP(S) URL is provided.
     // Otherwise fall back to the standard relative callback path '/auth/google/callback'
-    const googleCallbackUrl =
-        process.env.GOOGLE_CALLBACK_URL && /https?:\/\//.test(process.env.GOOGLE_CALLBACK_URL)
-            ? process.env.GOOGLE_CALLBACK_URL
-            : "/auth/google/callback";
+    const googleCallbackUrl = resolveGoogleCallbackUrl();
 
     passport.use(
         new GoogleStrategy(

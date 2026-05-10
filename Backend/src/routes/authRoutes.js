@@ -8,6 +8,26 @@ require("dotenv").config(); // Load environment variables
 // Import User Model
 const User = require("../models/userModel");
 
+function isLocalHostUrl(value) {
+  if (!value || typeof value !== "string") {
+    return false;
+  }
+
+  try {
+    const parsed = new URL(value);
+    return (
+      parsed.hostname === "localhost" ||
+      parsed.hostname === "127.0.0.1" ||
+      parsed.hostname.endsWith(".local") ||
+      /^10\./.test(parsed.hostname) ||
+      /^192\.168\./.test(parsed.hostname) ||
+      /^172\.(1[6-9]|2\d|3[0-1])\./.test(parsed.hostname)
+    );
+  } catch {
+    return false;
+  }
+}
+
 // Existing Authentication Routes
 router.post("/signup", signup);
 router.post("/login", login);
@@ -23,7 +43,11 @@ const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
 // matches the redirect_uri that passport/google will use when a relative
 // callback path is configured.
 function computeCallbackUrl(req) {
-  if (process.env.GOOGLE_CALLBACK_URL && /https?:\/\//.test(process.env.GOOGLE_CALLBACK_URL)) {
+  if (
+    process.env.GOOGLE_CALLBACK_URL &&
+    /https?:\/\//.test(process.env.GOOGLE_CALLBACK_URL) &&
+    !isLocalHostUrl(process.env.GOOGLE_CALLBACK_URL)
+  ) {
     return process.env.GOOGLE_CALLBACK_URL;
   }
   // Use the incoming request's protocol and host to build the callback URL
