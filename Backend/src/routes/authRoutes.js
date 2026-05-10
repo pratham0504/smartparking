@@ -50,10 +50,20 @@ function computeCallbackUrl(req) {
   ) {
     return process.env.GOOGLE_CALLBACK_URL;
   }
+
+  const renderBaseUrl =
+    process.env.RENDER_EXTERNAL_URL ||
+    process.env.RENDER_EXTERNAL_HOSTNAME ||
+    process.env.RENDER_SERVICE_URL;
+
+  if (renderBaseUrl && /https?:\/\//.test(renderBaseUrl)) {
+    return `${renderBaseUrl.replace(/\/$/, '')}/auth/google/callback`;
+  }
+
   // Use the incoming request's protocol and host to build the callback URL
   // when only a relative path is configured (passport uses the request host).
   const host = req.get("host");
-  const protocol = req.protocol;
+  const protocol = req.get("x-forwarded-proto") || req.protocol || "https";
   return `${protocol}://${host}/auth/google/callback`;
 }
 if (hasGoogleConfig) {

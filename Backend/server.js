@@ -15,6 +15,7 @@ const PORT = process.env.PORT || 10000;
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const app = express();
+app.set('trust proxy', 1);
 // Protection contre le fingerprinting - désactiver l'en-tête X-Powered-By
 app.disable('x-powered-by');
 

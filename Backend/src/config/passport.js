@@ -29,6 +29,15 @@ function resolveGoogleCallbackUrl() {
         return configuredUrl;
     }
 
+    const renderBaseUrl =
+        process.env.RENDER_EXTERNAL_URL ||
+        process.env.RENDER_EXTERNAL_HOSTNAME ||
+        process.env.RENDER_SERVICE_URL;
+
+    if (renderBaseUrl && /https?:\/\//.test(renderBaseUrl)) {
+        return `${renderBaseUrl.replace(/\/$/, '')}/auth/google/callback`;
+    }
+
     return "/auth/google/callback";
 }
 
