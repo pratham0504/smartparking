@@ -4,6 +4,7 @@ import { Col, Row } from 'react-bootstrap'
 import { CardCarPersonalize } from '../../Card/Card'
 import { useState } from 'react'
 import axios from 'axios';
+import { getBackendUrl } from '../../../utils/backend';
 
 const Personalize = ({ parkingData, reservationDetails, onContinue }) => {
     const [toogleSelect, settoogleSelect] = useState("")
