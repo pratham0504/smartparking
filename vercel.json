@@ -1,8 +1,8 @@
 {
   "framework": "create-react-app",
-  "buildCommand": "cd Front-end-Front-Office- && npm install && npm run build",
+  "buildCommand": "cd Front-end-Front-Office- && npm install --legacy-peer-deps && npm run build",
   "outputDirectory": "Front-end-Front-Office-/build",
-  "installCommand": "npm install",
+  "installCommand": "npm install --legacy-peer-deps",
   "rewrites": [
     {
       "source": "/api/:path*",
