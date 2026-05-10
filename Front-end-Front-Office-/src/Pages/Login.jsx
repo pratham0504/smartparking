@@ -6,7 +6,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AuthContext } from "../AuthContext"; // Make sure to import the hook
 import { jwtDecode } from "jwt-decode"; // Correct import
-import { getBackendUrl } from "../utils/backend";
+import { getAdminFrontendUrl, getBackendUrl } from "../utils/backend";
 
 const Login = () => {
   // State for form fields and OTP message popup
@@ -52,7 +52,7 @@ const Login = () => {
         
         // Check if the user is an Admin and redirect to the backoffice
         if (decodedToken.role === "Admin") {
-          window.location.href = "http://localhost:5173/users";
+          window.location.href = `${getAdminFrontendUrl()}/users`;
         } else {
           navigate("/");
         }
@@ -120,7 +120,7 @@ const Login = () => {
       // Check if the user is an Admin and redirect to the backoffice
       if (decodedToken.role === "Admin") {
         // Redirect to the backoffice with the token stored in localStorage
-        window.location.href = "http://localhost:5173/users";
+        window.location.href = `${getAdminFrontendUrl()}/users`;
       } else {
         // Redirect to the front-office homepage
         navigate("/");

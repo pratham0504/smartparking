@@ -7,7 +7,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./FaceAuth.css";
 import { AuthContext } from "../../AuthContext";
-import { getBackendUrl } from "../../utils/backend";
+import { getAdminFrontendUrl, getBackendUrl } from "../../utils/backend";
 
 const FaceAuth = () => {
   const videoRef = useRef(null);
@@ -241,7 +241,7 @@ const FaceAuth = () => {
           // Only redirect after toast is closed and webcam is stopped
           console.log("Toast closed, proceeding with redirect");
           if (decodedToken.role === "Admin") {
-            window.location.href = "http://localhost:5173/";
+            window.location.href = `${getAdminFrontendUrl()}/`;
           } else {
             // Navigate to home/profile page for regular users
             navigate("/");
