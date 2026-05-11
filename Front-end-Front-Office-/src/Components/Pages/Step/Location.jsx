@@ -981,9 +981,11 @@ const SecLocation = () => {
       setLoading(true);
       setError(null);
 
-      const response = await axios.get(
-        `${getBackendUrl()}/api/parkings`
-      );
+      // Use nearby endpoint (public) with a wide radius/limit to fetch many parkings
+      const coords = location || defaultCenter;
+      const response = await axios.get(`${getBackendUrl()}/api/parkings/nearby`, {
+        params: { lat: coords.lat, lng: coords.lng, limit: 100 },
+      });
       const allParkings = response.data;
 
       const formattedParkings = allParkings.map((parking) => ({
