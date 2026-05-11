@@ -34,6 +34,10 @@ RUN cd Backend && npm install --legacy-peer-deps
 
 COPY . .
 
+# Ensure plate detector folder is explicitly copied into the image
+# Some CI/CD systems may not include certain folders by default; this forces inclusion
+COPY Car-Number-Plates-Detection-IA-Model- /app/Car-Number-Plates-Detection-IA-Model-
+
 RUN python3 -m venv /app/.venv && \
 	/app/.venv/bin/pip install --upgrade pip setuptools wheel && \
 	/app/.venv/bin/pip install -r requirements.txt && \
