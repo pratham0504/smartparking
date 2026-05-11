@@ -55,10 +55,6 @@ def log_debug(msg):
 # ========== ARDUINO CONNECTION ==========
 def connect_arduino():
     """Establish connection to Arduino"""
-    if os.getenv('RENDER') == 'true' and 'ARDUINO_PORT' not in os.environ:
-        log_info('RENDER=true and no ARDUINO_PORT was provided; skipping RFID bridge startup.')
-        return None
-
     try:
         log_info(f"Connecting to Arduino on {ARDUINO_PORT}@{ARDUINO_BAUD}...")
         arduino = serial.Serial(ARDUINO_PORT, ARDUINO_BAUD, timeout=CONNECTION_TIMEOUT)
@@ -293,6 +289,11 @@ def main():
     log_info("=" * 50)
     log_info(f"Backend URL: {BACKEND_URL}")
     log_info(f"Arduino Port: {ARDUINO_PORT}")
+    
+    if os.getenv('RENDER') == 'true' and 'ARDUINO_PORT' not in os.environ:
+        log_info('RENDER=true and no ARDUINO_PORT was provided; exiting RFID bridge.')
+        sys.exit(0)
+    
     log_info("Waiting for Arduino connection...")
     
     arduino = None

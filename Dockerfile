@@ -25,6 +25,10 @@ RUN ln -sf /usr/bin/python3 /usr/bin/python
 
 WORKDIR /app
 
+# Cache buster: force rebuilds to copy fresh files
+ARG BUILD_DATE
+ENV BUILD_DATE=${BUILD_DATE}
+
 COPY package*.json ./Backend/
 RUN cd Backend && npm install --legacy-peer-deps
 
