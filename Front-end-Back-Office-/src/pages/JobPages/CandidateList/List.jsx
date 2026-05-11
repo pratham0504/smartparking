@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Card, CardBody, Col, Row } from 'reactstrap';
 
 //import common data
-import { jobListCandidate } from "../../../common/data/job";
+import { jobListCandidate } from "../../../common/data";
 
 const List = ({ listData }) => {
     const activeBtn = (ele) => {

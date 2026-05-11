@@ -1,7 +1,7 @@
 import { cryptoOrders, wallet, productData, cryptoOrderData, icoLandingTeam, blogs, orderbookData } from "./data/crypto";
 import { invoiceList } from "./data/invoices";
 import { projects, projectListData, OverviewTeamMember, projectAssignedTo } from "./data/projects";
-import { tasks, recentTasksData, AddTeamMember } from "./data/tasks";
+import { tasks, recentTasksData, AddTeamMember, options, series } from "./data/tasks";
 import {
 	inboxmails,
 	starredmails,
@@ -113,6 +113,8 @@ export {
 	OverviewTeamMember,
 	projectAssignedTo,
 	tasks,
+	options,
+	series,
 	users,
 	userProfile,
 	dahsboardEmail,

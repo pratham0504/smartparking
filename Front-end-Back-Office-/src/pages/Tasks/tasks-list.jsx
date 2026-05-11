@@ -10,8 +10,8 @@ import ReactApexChart from "react-apexcharts";
 // Redux actions - FIXED: Changed from "/src/store..." to relative path
 import { getTasks as onGetTasks } from "../../store/tasks/actions";
 
-// Data - FIXED: Changed from "/src/common..." to relative path
-import { options, series, recentTasksData } from "../../common/data/tasks";
+// Data - FIXED: Import from tracked data.js instead of untracked data/tasks directory
+import { options, series, recentTasksData } from "../../common/data";
 
 // redux
 import { useSelector, useDispatch } from "react-redux";
