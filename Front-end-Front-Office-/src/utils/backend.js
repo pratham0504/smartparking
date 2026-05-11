@@ -44,14 +44,19 @@ export function getBackendUrl() {
   }
 
   if (typeof window !== 'undefined' && window.location && window.location.hostname) {
-    const chosen = isLocalDevelopmentHost(window.location.hostname)
+    const isLocal = isLocalDevelopmentHost(window.location.hostname);
+    const chosen = isLocal
       ? 'http://localhost:3001'
       : PRODUCTION_BACKEND_URL;
-    // Log chosen backend for easier debugging in deployed environments
-    try {
-      // eslint-disable-next-line no-console
-      console.debug('[getBackendUrl] selected backend url ->', chosen);
-    } catch (e) {}
+    
+    // DEBUG: Always log to console in all environments
+    console.warn('[getBackendUrl] DEBUG:', {
+      hostname: window.location.hostname,
+      isLocal,
+      chosen,
+      url: window.location.href
+    });
+    
     return chosen;
   }
 
