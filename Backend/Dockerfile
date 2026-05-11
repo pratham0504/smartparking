@@ -42,6 +42,10 @@ RUN echo "📦 Installing Python dependencies from requirements.txt..." && \
 # Copy entire project
 COPY . .
 
+# Verify the detector assets are inside the Backend build context
+RUN echo "--- /app contents after COPY ---" && ls -la /app || true
+RUN echo "--- /app/detector contents ---" && ls -la /app/detector || true
+
 # Expose port
 EXPOSE 3001
 
