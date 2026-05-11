@@ -25,7 +25,7 @@ RUN ln -sf /usr/bin/python3 /usr/bin/python
 
 WORKDIR /app
 
-# Cache buster: force rebuilds to copy fresh files
+# Cache buster: force rebuilds to copy fresh files (updated 2026-05-11 15:35)
 ARG BUILD_DATE
 ENV BUILD_DATE=${BUILD_DATE}
 
