@@ -35,7 +35,7 @@ RUN npm install --legacy-peer-deps
 # Copy requirements.txt and install Python dependencies (from root of project)
 COPY requirements.txt ./
 RUN echo "📦 Installing Python dependencies from requirements.txt..." && \
-    pip3 install -r requirements.txt && \
+    pip3 install --break-system-packages -r requirements.txt && \
     echo "✅ Python dependencies installed successfully" && \
     python3 -c "import serial; print('✅ pyserial available'); import requests; print('✅ requests available'); import flask; print('✅ flask available')"
 
