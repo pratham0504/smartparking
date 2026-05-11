@@ -3,8 +3,21 @@ const path = require('path');
 const fs = require('fs').promises;
 const os = require('os');
 
-// Flask API settings with environment variable support for Docker/hosting
-const FLASK_URL = process.env.PLATE_DETECTOR_API_URL || 'http://localhost:5001/detect_plate';
+// Plate detector URL resolution:
+// - On Render backend: prefer internal detector process (same container).
+// - On Vercel/serverless backend: allow forwarding to Render backend detect-url endpoint.
+const INTERNAL_DETECTOR_URL = 'http://127.0.0.1:5002/detect_plate';
+const REMOTE_RENDER_DETECT_URL = 'https://smartparking-f86d.onrender.com/api/plate-detection/detect-url';
+
+function resolveDetectorUrl() {
+    if (process.env.PLATE_DETECTOR_API_URL) return process.env.PLATE_DETECTOR_API_URL;
+    if (process.env.RENDER) return INTERNAL_DETECTOR_URL;
+    if (process.env.VERCEL) return REMOTE_RENDER_DETECT_URL;
+    return 'http://localhost:5001/detect_plate';
+}
+
+const FLASK_URL = resolveDetectorUrl();
+const REMOTE_PROXY_MODE = /\/api\/plate-detection\/detect-url$/i.test(FLASK_URL);
 const FALLBACK_MODE_ENABLED = process.env.PLATE_DETECTOR_FALLBACK_ENABLED !== 'false';
 
 class PlateDetectionService {
@@ -39,7 +52,9 @@ class PlateDetectionService {
             this.lastHealthCheck = now;
 
             // Try the health endpoint with a few retries (network can be flaky)
-            const healthUrl = FLASK_URL.replace('/detect_plate', '/health');
+            const healthUrl = REMOTE_PROXY_MODE
+                ? FLASK_URL.replace('/detect-url', '/health')
+                : FLASK_URL.replace('/detect_plate', '/health');
             const maxHealthAttempts = 3;
             let attempt = 0;
             let lastErr = null;
@@ -137,6 +152,50 @@ class PlateDetectionService {
         while (retries <= maxRetries) {
             try {
                 console.log('🔄 Processing image from URL:', imageUrl);
+
+                // Remote proxy mode: send URL directly to Render backend endpoint.
+                if (REMOTE_PROXY_MODE) {
+                    console.log('🌐 Remote detector proxy mode enabled:', FLASK_URL);
+                    const proxyResponse = await axios.post(
+                        FLASK_URL,
+                        { imageUrl },
+                        { timeout: 45000 }
+                    );
+
+                    const proxyResult = proxyResponse.data || {};
+                    if (!proxyResult.success || proxyResult.noPlateDetected) {
+                        return {
+                            success: false,
+                            plateText: null,
+                            rawPlateText: proxyResult.plateText || null,
+                            confidence: proxyResult.confidence || 0,
+                            noPlateDetected: true,
+                            fallbackMode: Boolean(proxyResult.fallbackMode),
+                            details: proxyResult.details || null
+                        };
+                    }
+
+                    const standardizedPlateText = this.standardizeIndianPlate(proxyResult.plateText);
+                    if (!standardizedPlateText || (proxyResult.confidence || 0) < 0.5) {
+                        return {
+                            success: false,
+                            plateText: null,
+                            rawPlateText: proxyResult.plateText || null,
+                            confidence: proxyResult.confidence || 0,
+                            noPlateDetected: true,
+                            invalidPlate: true,
+                            details: proxyResult.details || null
+                        };
+                    }
+
+                    return {
+                        success: true,
+                        plateText: standardizedPlateText,
+                        rawPlateText: proxyResult.plateText,
+                        confidence: proxyResult.confidence || 0,
+                        fullOutput: proxyResult.details || null
+                    };
+                }
                 
                 // Get image buffer
                 const imageBuffer = await this.downloadImage(imageUrl);
@@ -275,7 +334,9 @@ class PlateDetectionService {
     async runDiagnostics() {
         try {
             // Check if Flask API health endpoint is accessible
-            const healthUrl = FLASK_URL.replace('/detect_plate', '/health');
+            const healthUrl = REMOTE_PROXY_MODE
+                ? FLASK_URL.replace('/detect-url', '/health')
+                : FLASK_URL.replace('/detect_plate', '/health');
             let status = 'unavailable';
             try {
                 const response = await axios.get(healthUrl, { timeout: 15000 });
