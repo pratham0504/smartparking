@@ -1245,9 +1245,9 @@ const SecLocation = () => {
       return;
     }
 
-    // Validate and parse coordinates
-    let parkingLat = parking.latitude;
-    let parkingLng = parking.longitude;
+    // Validate and parse coordinates (use 'lat' and 'lng' which match the formatted parkings)
+    let parkingLat = parking.lat;
+    let parkingLng = parking.lng;
     
     // Try to convert to numbers if they're strings
     if (typeof parkingLat === 'string') parkingLat = parseFloat(parkingLat);
@@ -1257,7 +1257,7 @@ const SecLocation = () => {
     
     if (!parkingLat || !parkingLng || isNaN(parkingLat) || isNaN(parkingLng)) {
       console.error("❌ Invalid coordinates");
-      alert(`Invalid parking coordinates!\nLat: ${parking.latitude}\nLng: ${parking.longitude}`);
+      alert(`Invalid parking coordinates!\nLat: ${parking.lat}\nLng: ${parking.lng}`);
       return;
     }
 
