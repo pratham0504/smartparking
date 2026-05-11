@@ -4,6 +4,7 @@ import { Card, CardBody, Col, Row } from "reactstrap";
 import ReactApexChart from "react-apexcharts";
 import axios from "axios";
 import ParkingGrowth from "./ParkingGrowth ";
+import { getBackendUrl } from '../../../utils/backend';
 
 const CardParkingStats = ({ dataColors }) => {
   const [parkings, setParkings] = useState([]);
@@ -12,12 +13,12 @@ const CardParkingStats = ({ dataColors }) => {
 
   useEffect(() => {
     // Fetch all parkings
-    axios.get("http://localhost:3001/parkings/parkings")
+    axios.get(`${getBackendUrl()}/parkings/parkings`)
       .then(response => setParkings(response.data))
       .catch(error => console.error("Error fetching parking data:", error));
 
     // Fetch pending parkings
-    axios.get("http://localhost:3001/parkings/requests")
+    axios.get(`${getBackendUrl()}/parkings/requests`)
       .then(response => setPendingParkings(response.data))
       .catch(error => console.error("Error fetching pending parkings:", error));
   }, []);

@@ -12,6 +12,7 @@ import {
 } from "reactstrap";
 import SimpleBar from "simplebar-react";
 import "simplebar-react/dist/simplebar.min.css"; // Import SimpleBar styles
+import { getBackendUrl } from '../../../utils/backend';
 
 const TapParkings = () => {
   const [regionData, setRegionData] = useState([]);
@@ -21,7 +22,7 @@ const TapParkings = () => {
     const fetchParkings = async () => {
       try {
         setLoading(true);
-        const response = await fetch("http://localhost:3001/parkings/parkings");
+        const response = await fetch(`${getBackendUrl()}/parkings/parkings`);
         const data = await response.json();
 
         if (!Array.isArray(data) || data.length === 0) {

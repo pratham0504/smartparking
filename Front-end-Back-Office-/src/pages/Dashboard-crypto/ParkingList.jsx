@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { getBackendUrl } from '../../../utils/backend';
 import {
   Card,
   CardBody,
@@ -24,7 +25,7 @@ const ParkingList = () => {
   const [regionFilter, setRegionFilter] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:3001/parkings/parkings")
+    fetch(`${getBackendUrl()}/parkings/parkings`)
       .then((res) => res.json())
       .then((data) => {
         setParkings(data);

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Row, Col, Card, CardBody } from "reactstrap";
 import ReactApexChart from "react-apexcharts";
 import getChartColorsArray from "../../components/Common/ChartsDynamicColor";
+import { getBackendUrl } from '../../../utils/backend';
 
 const UserDonutChart = ({ dataColors }) => {
   const apexsaleschartColors = getChartColorsArray(dataColors);
@@ -13,7 +14,7 @@ const UserDonutChart = ({ dataColors }) => {
   });
 
   useEffect(() => {
-    fetch("http://localhost:3001/User/users")
+    fetch(`${getBackendUrl()}/User/users`)
       .then((res) => res.json())
       .then((data) => {
         const totalUsers = data.length;

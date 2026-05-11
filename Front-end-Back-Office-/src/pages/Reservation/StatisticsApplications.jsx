@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardBody, Col, Nav, NavItem, NavLink } from 'reactstrap';
+import { getBackendUrl } from '../../../utils/backend';
 import { StatisticsReservationsChart } from './ReservationCharts';
 
 const StatisticsReservations = () => {
@@ -23,8 +24,8 @@ const StatisticsReservations = () => {
     const fetchStatistics = async () => {
         try {
             const [resRes, resParks] = await Promise.all([
-                fetch('http://localhost:3001/api/list-all').then(res => res.json()),
-                fetch('http://localhost:3001/parkings/parkings').then(res => res.json())
+                fetch(`${getBackendUrl()}/api/list-all`).then(res => res.json()),
+                fetch(`${getBackendUrl()}/parkings/parkings`).then(res => res.json())
             ]);
 
             const reservationData = resRes;

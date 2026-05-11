@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardBody, Col, Row } from "reactstrap";
+import { getBackendUrl } from '../../../utils/backend';
 
 const ChartSection = () => {
     const [userStats, setUserStats] = useState({
@@ -10,7 +11,7 @@ const ChartSection = () => {
     });
 
     useEffect(() => {
-        fetch("http://localhost:3001/User/users")
+        fetch(`${getBackendUrl()}/User/users`)
             .then((res) => res.json())
             .then((data) => {
                 const totalUsers = data.length;

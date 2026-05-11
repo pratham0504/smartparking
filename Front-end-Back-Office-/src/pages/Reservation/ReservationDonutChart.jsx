@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Row, Col, Card, CardBody } from "reactstrap";
 import ReactApexChart from "react-apexcharts";
 import getChartColorsArray from "../../components/Common/ChartsDynamicColor";
+import { getBackendUrl } from '../../../utils/backend';
 
 const ReservationDonutChart = ({ dataColors }) => {
   const chartColors = getChartColorsArray(dataColors);
@@ -12,7 +13,7 @@ const ReservationDonutChart = ({ dataColors }) => {
   });
 
   useEffect(() => {
-    fetch("http://localhost:3001/api/list-all")
+    fetch(`${getBackendUrl()}/api/list-all`)
       .then((res) => res.json())
       .then((data) => {
         const total = data.length;

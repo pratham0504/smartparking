@@ -36,7 +36,7 @@ const TableUsers = () => {
 
   // Fetch all users
   useEffect(() => {
-    fetch("http://localhost:3001/User/users")
+    fetch(`${getBackendUrl()}/User/users`)
       .then(response => response.json())
       .then(data => setUsers(data))
       .catch(error => console.error("Error fetching users:", error));
@@ -68,7 +68,7 @@ const TableUsers = () => {
 
     console.log("Sending user data:", userToSend); // Debug log
     
-    fetch("http://localhost:3001/User/users", {
+    fetch(`${getBackendUrl()}/User/users`, {
       method: "POST",
       headers: { 
         "Content-Type": "application/json"
@@ -126,7 +126,7 @@ const TableUsers = () => {
 
     console.log("Sending updated user data:", userToUpdate); // Debug log
     
-    fetch(`http://localhost:3001/User/users/${userToUpdate._id}`, {
+    fetch(`${getBackendUrl()}/User/users/${userToUpdate._id}`, {
       method: "PUT",
       headers: { 
         "Content-Type": "application/json"

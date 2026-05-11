@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardBody, Col } from 'reactstrap';
 import SimpleBar from "simplebar-react";
+import { getBackendUrl } from '../../../utils/backend';
 
 const ActivityFeed = () => {
   const [activities, setActivities] = useState([]);
 
   useEffect(() => {
     // Step 1: Fetch all reservations
-    fetch("http://localhost:3001/api/list-all")
+    fetch(`${getBackendUrl()}/api/list-all`)
       .then((res) => res.json())
       .then(async (reservations) => {
         // Step 2: Fetch each reservation's user info
