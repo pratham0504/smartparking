@@ -282,7 +282,9 @@ server.listen(PORT, '0.0.0.0', () => {
     const services = [
       {
         name: 'plate-detector',
-        enabled: process.env.START_PLATE_DETECTOR === 'true' || isLocalLike,
+        enabled:
+          process.env.START_PLATE_DETECTOR === 'true' || isLocalLike ||
+          startPythonServices,
         script: path.join(projectRoot, 'Car-Number-Plates-Detection-IA-Model-', 'indian_plate_detector_tesseract.py'),
         args: [],
         env: {
@@ -292,7 +294,9 @@ server.listen(PORT, '0.0.0.0', () => {
       },
       {
         name: 'rfid-bridge',
-        enabled: process.env.START_RFID_BRIDGE === 'true' || isLocalLike,
+        enabled:
+          process.env.START_RFID_BRIDGE === 'true' || isLocalLike ||
+          startPythonServices,
         script: path.join(__dirname, 'src', 'rfidGateBridge.py'),
         args: [],
         env: {
