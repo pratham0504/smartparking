@@ -488,9 +488,11 @@ const SecLocation = () => {
     const fetchParkings = async () => {
       try {
         setLoading(true);
-        console.log("Fetching parkings from API...");
+        console.log("Fetching parkings from API (nearby)...");
+        // Use the public nearby endpoint which doesn't require auth and accepts lat/lng
         const response = await axios.get(
-          `${getBackendUrl()}/api/parkings`
+          `${getBackendUrl()}/api/parkings/nearby`,
+          { params: { lat: location.lat, lng: location.lng } }
         );
         console.log("API response:", response.data);
 
