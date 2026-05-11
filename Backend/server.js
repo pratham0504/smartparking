@@ -275,8 +275,6 @@ server.listen(PORT, '0.0.0.0', () => {
       startPythonServices
     });
     const projectRoot = path.join(__dirname, '..');
-    const isVercel = Boolean(process.env.VERCEL);
-    const isLocalLike = process.env.NODE_ENV !== 'production' && !isVercel;
     const pythonBin = process.env.PYTHON_BIN || 'python3';
 
     const services = [
