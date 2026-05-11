@@ -276,6 +276,10 @@ server.listen(PORT, '0.0.0.0', () => {
     });
     const projectRoot = path.join(__dirname, '..');
     const pythonBin = process.env.PYTHON_BIN || 'python3';
+    
+    // Debug: log projectRoot and __dirname for troubleshooting
+    console.log(`📁 __dirname: ${__dirname}`);
+    console.log(`📁 projectRoot: ${projectRoot}`);
 
     const services = [
       {
@@ -311,7 +315,11 @@ server.listen(PORT, '0.0.0.0', () => {
 
       const startService = () => {
         if (!fs.existsSync(svc.script)) {
-          console.log(`⚠️  Script not found: ${svc.script}, skipping ${svc.name}`);
+          console.log(`⚠️  Script not found: ${svc.script}`);
+          if (svc.name === 'plate-detector') {
+            console.log(`   Looked for plate-detector at: ${svc.script}`);
+            console.log(`   Please ensure Car-Number-Plates-Detection-IA-Model- folder is in the project root.`);
+          }
           return;
         }
         try {

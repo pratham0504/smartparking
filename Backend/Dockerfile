@@ -22,6 +22,16 @@ RUN npm install --legacy-peer-deps
 # Copier le reste des fichiers de l'application
 COPY . .
 
+# Install Python dependencies for Python services (rfid-bridge, plate-detector)
+RUN python3 -m pip install --no-cache-dir \
+    pyserial \
+    requests \
+    flask \
+    torch \
+    torchvision \
+    pillow \
+    opencv-python || true
+
 # Exposer le port utilisé par Express
 EXPOSE 3001
 
