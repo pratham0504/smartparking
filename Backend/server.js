@@ -89,6 +89,20 @@ const corsOptions = {
   maxAge: 86400,
 };
 
+// Socket.IO CORS configuration (needs slightly different format than Express CORS)
+const socketIoCorsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1 || isTrustedPreviewOrigin(origin)) {
+      callback(null, true);
+    } else {
+      console.log(`Socket.IO CORS blocked origin: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ["GET", "POST"],
+  credentials: true,
+};
+
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));
 
@@ -174,7 +188,10 @@ app.get('/metrics', async (req, res) => {
 
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: corsOptions // Use the unified CORS options for Socket.io
+  cors: socketIoCorsOptions,
+  transports: ['websocket', 'polling'],
+  pingInterval: 25000,
+  pingTimeout: 60000
 });
 
 io.on('connection', (socket) => {
