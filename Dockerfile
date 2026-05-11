@@ -38,6 +38,11 @@ COPY . .
 # Some CI/CD systems may not include certain folders by default; this forces inclusion
 COPY Car-Number-Plates-Detection-IA-Model- /app/Car-Number-Plates-Detection-IA-Model-
 
+# Debug listing to verify the detector folder is present in the build image
+# (temporary; remove once deploy confirms presence)
+RUN echo "--- /app contents after COPY ---" && ls -la /app || true
+RUN echo "--- /app/Car-Number-Plates-Detection-IA-Model- contents ---" && ls -la /app/Car-Number-Plates-Detection-IA-Model- || true
+
 RUN python3 -m venv /app/.venv && \
 	/app/.venv/bin/pip install --upgrade pip setuptools wheel && \
 	/app/.venv/bin/pip install -r requirements.txt && \
