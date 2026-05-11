@@ -42,6 +42,51 @@
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
+
+    <script>
+      (function () {
+        var backendUrl = 'https://smartparking-f86d.onrender.com';
+        var runningHost = window.location && window.location.hostname ? window.location.hostname : '';
+        var isLocalHost =
+          runningHost === 'localhost' ||
+          runningHost === '127.0.0.1' ||
+          runningHost.endsWith('.local');
+
+        if (isLocalHost) {
+          backendUrl = 'http://localhost:3001';
+        }
+
+        window.RUNTIME_CONFIG = window.RUNTIME_CONFIG || {};
+        window.RUNTIME_CONFIG.BACKEND_URL = backendUrl;
+
+        var rewriteUrl = function (value) {
+          if (typeof value !== 'string') return value;
+          return value.replace(/^https?:\/\/localhost:3001(?=\/|$)/, backendUrl);
+        };
+
+        if (typeof window.fetch === 'function') {
+          var originalFetch = window.fetch.bind(window);
+          window.fetch = function (input, init) {
+            if (typeof input === 'string') {
+              return originalFetch(rewriteUrl(input), init);
+            }
+
+            if (typeof Request !== 'undefined' && input instanceof Request) {
+              return originalFetch(new Request(rewriteUrl(input.url), input), init);
+            }
+
+            return originalFetch(input, init);
+          };
+        }
+
+        if (typeof XMLHttpRequest !== 'undefined') {
+          var originalOpen = XMLHttpRequest.prototype.open;
+          XMLHttpRequest.prototype.open = function (method, url) {
+            return originalOpen.apply(this, [method, rewriteUrl(url)].concat([].slice.call(arguments, 2)));
+          };
+        }
+      })();
+    </script>
     
     <!-- Runtime Configuration Injection -->
     <script>
