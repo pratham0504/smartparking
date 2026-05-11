@@ -4,7 +4,7 @@ import { Card, CardBody, Col, Row } from "reactstrap";
 import ReactApexChart from "react-apexcharts";
 import axios from "axios";
 import ParkingGrowth from "./ParkingGrowth ";
-import { getBackendUrl } from '../../../utils/backend';
+import { getBackendUrl } from '../../utils/backend';
 
 const CardParkingStats = ({ dataColors }) => {
   const [parkings, setParkings] = useState([]);

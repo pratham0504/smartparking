@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardBody, Col, Nav, NavItem, NavLink } from 'reactstrap';
-import { getBackendUrl } from '../../../utils/backend';
+import { getBackendUrl } from '../../utils/backend';
 import { StatisticsReservationsChart } from './ReservationCharts';
 
 const StatisticsReservations = () => {

@@ -12,7 +12,7 @@ import {
 // SimpleBar
 import SimpleBar from "simplebar-react";
 import axios from "axios";
-import { getBackendUrl } from '../../../utils/backend';
+import { getBackendUrl } from '../../utils/backend';
 
 const Activity = () => {
   const [latestParkings, setLatestParkings] = useState([]);

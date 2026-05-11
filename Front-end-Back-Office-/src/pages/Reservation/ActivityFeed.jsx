@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardBody, Col } from 'reactstrap';
 import SimpleBar from "simplebar-react";
-import { getBackendUrl } from '../../../utils/backend';
+import { getBackendUrl } from '../../utils/backend';
 
 const ActivityFeed = () => {
   const [activities, setActivities] = useState([]);

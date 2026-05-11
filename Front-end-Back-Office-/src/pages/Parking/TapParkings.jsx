@@ -12,7 +12,7 @@ import {
 } from "reactstrap";
 import SimpleBar from "simplebar-react";
 import "simplebar-react/dist/simplebar.min.css"; // Import SimpleBar styles
-import { getBackendUrl } from '../../../utils/backend';
+import { getBackendUrl } from '../../utils/backend';
 
 const TapParkings = () => {
   const [regionData, setRegionData] = useState([]);

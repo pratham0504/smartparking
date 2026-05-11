@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardBody, Col, Row } from "reactstrap";
-import { getBackendUrl } from '../../../utils/backend';
+import { getBackendUrl } from '../../utils/backend';
 
 const ChartSection = () => {
     const [userStats, setUserStats] = useState({

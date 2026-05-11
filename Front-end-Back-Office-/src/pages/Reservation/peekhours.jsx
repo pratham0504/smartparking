@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import ReactEcharts from "echarts-for-react";
 import getChartColorsArray from "../../components/Common/ChartsDynamicColor";
 import { Card, CardBody, Col } from "reactstrap";
-import { getBackendUrl } from '../../../utils/backend';
+import { getBackendUrl } from '../../utils/backend';
 
 const PeakReservationHoursChart = ({ dataColors }) => {
   const chartColors = getChartColorsArray(dataColors);
