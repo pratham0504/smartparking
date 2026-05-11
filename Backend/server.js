@@ -310,7 +310,10 @@ server.listen(PORT, '0.0.0.0', () => {
       }
 
       const startService = () => {
-        if (!fs.existsSync(svc.script)) return;
+        if (!fs.existsSync(svc.script)) {
+          console.log(`⚠️  Script not found: ${svc.script}, skipping ${svc.name}`);
+          return;
+        }
         try {
           console.log(`🔧 Spawning ${svc.name}: ${pythonBin} ${svc.script}`);
           const proc = spawn(pythonBin, [svc.script, ...svc.args], {
@@ -319,11 +322,14 @@ server.listen(PORT, '0.0.0.0', () => {
             stdio: ['ignore', 'pipe', 'pipe']
           });
 
+          proc.on('error', (err) => {
+            console.error(`❌ Failed to spawn ${svc.name} (${err.code}): ${err.message}`);
+          });
           proc.stdout.on('data', data => process.stdout.write(`[${svc.name}] ${data}`));
           proc.stderr.on('data', data => process.stderr.write(`[${svc.name}] ${data}`));
           proc.on('exit', () => setTimeout(startService, 3000));
         } catch (err) {
-          console.error(`❌ Exception starting ${svc.name}:`, err);
+          console.error(`❌ Exception starting ${svc.name}:`, err.message);
         }
       };
       startService();
