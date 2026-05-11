@@ -339,6 +339,17 @@ const createReservation = async (reservationData) => {
         // Accept the reservation immediately and sync parking spot state
         const accepted = await updateReservationStatus(reservation._id, 'accepted', null);
         console.log('✅ Reservation auto-accepted:', accepted._id);
+        
+        // Create notification for owner about the approved booking
+        await notificationService.createNotification({
+          driverId: reservationData.userId,
+          ownerId: parking.get("Owner"),
+          parkingId: reservationData.parkingId,
+          reservationId: reservation._id,
+          status: "acceptée",  // Notify owner that booking was approved
+        });
+        console.log('✅ Notification sent to owner about approved booking');
+        
         return accepted;
       } catch (err) {
         console.error('❌ Error auto-accepting reservation, falling back to pending:', err);
@@ -352,7 +363,7 @@ const createReservation = async (reservationData) => {
       ownerId: parking.get("Owner"),
       parkingId: reservationData.parkingId,
       reservationId: reservation._id,
-      status: "en_attente",
+      status: "en_attente",  // Request owner approval
     });
 
     console.log("✅ Reservation created successfully (pending owner approval):", reservation._id);
