@@ -111,7 +111,7 @@ const Personalize = ({ parkingData, reservationDetails, onContinue }) => {
     const handleReservation = async () => {
         setLoading(true);
         try {
-            const response = await axios.post('/api/reservations', {
+            const response = await axios.post(`${getBackendUrl()}/api/reservations`, {
                 parkingId: parkingData._id,
                 startTime: reservationDetails.startTime,
                 endTime: reservationDetails.endTime,
@@ -149,7 +149,7 @@ const Personalize = ({ parkingData, reservationDetails, onContinue }) => {
     const handleSubmit = async () => {
         setLoading(true);
         try {
-            const response = await axios.post('/api/reservations', {
+            const response = await axios.post(`${getBackendUrl()}/api/reservations`, {
                 parkingId: parkingData._id,
                 startTime: reservationInfo.startDate,
                 endTime: reservationInfo.endDate,
