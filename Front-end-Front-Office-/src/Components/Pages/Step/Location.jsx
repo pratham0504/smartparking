@@ -549,7 +549,8 @@ const SecLocation = () => {
           }, 300);
           shouldAutoSearchRef.current = false;
         } else {
-          setFilteredParkings([]);
+          // Show all nearby parkings by default so recently added entries are visible
+          setFilteredParkings(formattedParkings);
         }
 
         setLoading(false);
