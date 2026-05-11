@@ -425,7 +425,8 @@ router.delete('/:id', verifyToken, async (req, res) => {
 router.get('/:id', verifyToken, async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-      return res.status(400).json({ message: 'Invalid reservation ID' });
+      // Not a reservation id path: allow other /api/<segment> routes to handle it.
+      return res.status(404).json({ message: 'Reservation not found' });
     }
 
     const reservation = await Reservation.findById(req.params.id)

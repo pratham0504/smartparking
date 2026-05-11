@@ -225,6 +225,8 @@ app.use("/api", userRoutes);
 app.use("/api", claimRoutes);
 app.use("/api", contractRoutes);
 app.use("/api", reportRoutes);
+// Mount favorites before generic /api reservation routes to avoid /api/favorites being treated as reservation id.
+app.use('/api/favorites', favoriteRoutes);
 app.use("/api", reservationRoutes);
 app.use("/api", subscriptionRoutes);
 app.use("/api", passwordRoutes);
