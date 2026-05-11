@@ -1,39 +1,43 @@
 
-# Utiliser une image officielle de Node.js
-FROM node:20-alpine
+# Use Node image with Python support (slim has better package support than alpine)
+FROM node:20-slim
 
-# Install system dependencies including Python early in build
-RUN apk add --no-cache \
+# Install Python and required build tools for compiling Python packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
-    py3-pip \
-    build-base \
-    && ln -sf /usr/bin/python3 /usr/bin/python \
-    && python3 --version
+    python3-pip \
+    python3-dev \
+    build-essential \
+    gcc \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
 
-# Définir le répertoire de travail dans le conteneur
+# Create python symlink for compatibility
+RUN ln -sf /usr/bin/python3 /usr/bin/python
+
+# Verify Python is available
+RUN python3 --version && pip3 --version
+
+# Set working directory
 WORKDIR /app
 
-# Copier les fichiers package.json et package-lock.json
+# Copy and install Node dependencies
 COPY package*.json ./
-
-# Installer les dépendances
 RUN npm install --legacy-peer-deps
 
-# Copier le reste des fichiers de l'application
+# Install Python dependencies that services will need
+# Use pip3 with --no-cache-dir and specific versions for stability
+RUN pip3 install --no-cache-dir \
+    pyserial==3.5 \
+    requests==2.31.0 \
+    flask==2.3.3 \
+    python-dotenv==1.0.0 || echo "⚠️  Some Python packages may have failed to install, but continuing..."
+
+# Copy entire project
 COPY . .
 
-# Install Python dependencies for Python services (rfid-bridge, plate-detector)
-RUN python3 -m pip install --no-cache-dir \
-    pyserial \
-    requests \
-    flask \
-    torch \
-    torchvision \
-    pillow \
-    opencv-python || true
-
-# Exposer le port utilisé par Express
+# Expose port
 EXPOSE 3001
 
-# Démarrer le serveur
+# Start the server
 CMD ["npm", "start"]

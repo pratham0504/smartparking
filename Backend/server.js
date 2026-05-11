@@ -274,12 +274,14 @@ server.listen(PORT, '0.0.0.0', () => {
       isLocalLike,
       startPythonServices
     });
-    const projectRoot = path.join(__dirname, '..');
+    // In Render/Docker, __dirname might be /app/Backend or /app, so calculate appropriately
+    const projectRoot = process.env.RENDER ? '/app' : path.join(__dirname, '..');
     const pythonBin = process.env.PYTHON_BIN || 'python3';
     
     // Debug: log projectRoot and __dirname for troubleshooting
     console.log(`📁 __dirname: ${__dirname}`);
     console.log(`📁 projectRoot: ${projectRoot}`);
+    console.log(`📁 RENDER: ${process.env.RENDER}`);
 
     const services = [
       {
@@ -313,6 +315,8 @@ server.listen(PORT, '0.0.0.0', () => {
         return;
       }
 
+      let failureCount = 0;
+      let lastFailureTime = 0;
       const startService = () => {
         if (!fs.existsSync(svc.script)) {
           console.log(`⚠️  Script not found: ${svc.script}`);
@@ -332,10 +336,26 @@ server.listen(PORT, '0.0.0.0', () => {
 
           proc.on('error', (err) => {
             console.error(`❌ Failed to spawn ${svc.name} (${err.code}): ${err.message}`);
+            failureCount++;
+            lastFailureTime = Date.now();
+            if (failureCount >= 5) {
+              console.error(`❌ ${svc.name} failed 5 times. Giving up. Fix the service and restart.`);
+              return;
+            }
+            setTimeout(startService, 5000);
           });
           proc.stdout.on('data', data => process.stdout.write(`[${svc.name}] ${data}`));
           proc.stderr.on('data', data => process.stderr.write(`[${svc.name}] ${data}`));
-          proc.on('exit', () => setTimeout(startService, 3000));
+          proc.on('exit', (code) => {
+            failureCount++;
+            lastFailureTime = Date.now();
+            if (failureCount >= 5) {
+              console.error(`❌ ${svc.name} exited with code ${code} (failed 5 times). Giving up.`);
+              return;
+            }
+            console.log(`⚠️  ${svc.name} exited with code ${code}. Restarting in 5s...`);
+            setTimeout(startService, 5000);
+          });
         } catch (err) {
           console.error(`❌ Exception starting ${svc.name}:`, err.message);
         }
