@@ -283,13 +283,43 @@ server.listen(PORT, '0.0.0.0', () => {
     console.log(`📁 projectRoot: ${projectRoot}`);
     console.log(`📁 RENDER: ${process.env.RENDER}`);
 
+    // Resolve plate detector script path with fallbacks (some build systems may alter folder names)
+    const detectorCandidates = [
+      path.join(projectRoot, 'Car-Number-Plates-Detection-IA-Model-', 'indian_plate_detector_tesseract.py'),
+      path.join(projectRoot, 'Car-Number-Plates-Detection-IA-Model', 'indian_plate_detector_tesseract.py'),
+      path.join(projectRoot, 'Car-Number-Plates-Detection-IA-Model-', 'indian_plate_detector_tesseract.py'),
+      path.join(projectRoot, 'Car-Number-Plates-Detection-IA-Model', 'indian_plate_detector_tesseract.py')
+    ];
+
+    console.log('🔎 Detector path candidates:', detectorCandidates);
+    let resolvedDetectorScript = null;
+    try {
+      // Log projectRoot contents to aid remote debugging
+      const rootFiles = fs.readdirSync(projectRoot);
+      console.log('📂 projectRoot contents:', rootFiles);
+    } catch (err) {
+      console.warn('⚠️  Could not list projectRoot contents:', err.message);
+    }
+
+    for (const c of detectorCandidates) {
+      if (fs.existsSync(c)) {
+        resolvedDetectorScript = c;
+        break;
+      }
+    }
+
+    if (!resolvedDetectorScript) {
+      console.warn('⚠️  No detector script found in candidates, plate-detector will be disabled unless file is present in build.');
+    } else {
+      console.log('✅ Resolved detector script at:', resolvedDetectorScript);
+    }
+
     const services = [
       {
         name: 'plate-detector',
         enabled:
-          process.env.START_PLATE_DETECTOR === 'true' || isLocalLike ||
-          startPythonServices,
-        script: path.join(projectRoot, 'Car-Number-Plates-Detection-IA-Model-', 'indian_plate_detector_tesseract.py'),
+          (process.env.START_PLATE_DETECTOR === 'true' || isLocalLike || startPythonServices) && Boolean(resolvedDetectorScript),
+        script: resolvedDetectorScript,
         args: [],
         env: {
           DETECTOR_HOST: process.env.DETECTOR_HOST || '0.0.0.0',
