@@ -550,7 +550,13 @@ const NotificationList = () => {
   }, [page]);
 
   useEffect(() => {
-    socketRef.current = io(getBackendUrl());
+    socketRef.current = io(getBackendUrl(), {
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      reconnectionAttempts: 5,
+      transports: ['websocket', 'polling']
+    });
     const token = localStorage.getItem("token");
 
     if (token) {
@@ -741,7 +747,13 @@ const NotificationBadge = ({ onClick }) => {
   };
 
   useEffect(() => {
-    socketRef.current = io(getBackendUrl());
+    socketRef.current = io(getBackendUrl(), {
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      reconnectionAttempts: 5,
+      transports: ['websocket', 'polling']
+    });
     const token = localStorage.getItem("token");
 
     if (token) {

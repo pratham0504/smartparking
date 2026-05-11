@@ -23,7 +23,13 @@ const LiveParkingStatus = ({ parkingId = null, parkingName = 'shah&anchor', read
     useEffect(() => {
         // Connect to Socket.IO server for realtime slot updates
         const socketUrl = getBackendUrl();
-        const socket = io(socketUrl, { transports: ['websocket', 'polling'] });
+        const socket = io(socketUrl, { 
+            transports: ['websocket', 'polling'],
+            reconnection: true,
+            reconnectionDelay: 1000,
+            reconnectionDelayMax: 5000,
+            reconnectionAttempts: 5
+        });
 
         socket.on('connect', () => {
             console.log('[LIVE-PARKING] Socket.IO connected:', socket.id);

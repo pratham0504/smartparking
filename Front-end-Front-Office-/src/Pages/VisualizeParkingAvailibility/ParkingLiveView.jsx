@@ -631,7 +631,13 @@ const ParkingLiveView = ({ parkingId: propParkingId }) => {
   }, [parkingId]);
 
   useEffect(() => {
-    const socket = io(getBackendUrl());
+    const socket = io(getBackendUrl(), {
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      reconnectionAttempts: 5,
+      transports: ['websocket', 'polling']
+    });
     socketRef.current = socket;
 
     const token = localStorage.getItem("token");
