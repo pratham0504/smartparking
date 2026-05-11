@@ -341,7 +341,7 @@ const createReservation = async (reservationData) => {
         console.log('✅ Reservation auto-accepted:', accepted._id);
         
         // Create notification for owner about the approved booking
-        await notificationService.createNotification({
+        await notificationService.createNotificationDirectly({
           driverId: reservationData.userId,
           ownerId: parking.get("Owner"),
           parkingId: reservationData.parkingId,
@@ -358,7 +358,7 @@ const createReservation = async (reservationData) => {
     }
 
     // Create a pending notification for owner approval
-    await notificationService.createNotification({
+    await notificationService.createNotificationDirectly({
       driverId: reservationData.userId,
       ownerId: parking.get("Owner"),
       parkingId: reservationData.parkingId,

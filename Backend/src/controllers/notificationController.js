@@ -85,6 +85,28 @@ exports.getUserNotifications = async (req, res) => {
 };
 
 
+// Service function to create notification (used by reservationService and other services)
+const createNotificationDirect = async (notificationData) => {
+    try {
+        const newNotification = new Notification({
+            driverId: notificationData.driverId,
+            ownerId: notificationData.ownerId,
+            parkingId: notificationData.parkingId,
+            reservationId: notificationData.reservationId,
+            status: notificationData.status || 'en_attente',
+            isRead: false
+        });
+
+        await newNotification.save();
+        console.log('✅ Notification created:', newNotification._id);
+        return newNotification;
+    } catch (error) {
+        console.error('❌ Error creating notification:', error);
+        throw error;
+    }
+};
+
+// HTTP handler for POST /api/notifications route
 exports.createNotification = async (req, res) => {
     try {
         const {
@@ -92,7 +114,7 @@ exports.createNotification = async (req, res) => {
             ownerId,
             parkingId,
             reservationId,
-            status = 'en_attente' // par défaut
+            status = 'en_attente'
         } = req.body;
 
         // Vérification rapide des champs obligatoires
@@ -103,51 +125,7 @@ exports.createNotification = async (req, res) => {
             });
         }
 
-        const newNotification = new Notification({
-            driverId,
-            ownerId,
-            parkingId,
-            reservationId,
-            status,
-            isRead: false
-        });
-
-        await newNotification.save();
-
-        res.status(201).json({
-            success: true,
-            message: 'Notification créée avec succès',
-            notification: newNotification
-        });
-    } catch (error) {
-        console.error("❌ Erreur lors de la création de la notification :", error);
-        res.status(500).json({
-            success: false,
-            message: 'Erreur serveur lors de la création de la notification',
-            error: error.message
-        });
-    }
-};
-
-// Dans notificationService.js
-exports.createNotificationFromRequest = async (req, res) => {
-    try {
-        const {
-            driverId,
-            ownerId,
-            parkingId,
-            reservationId,
-            status = 'en_attente'
-        } = req.body;
-
-        if (!driverId || !ownerId || !parkingId || !reservationId) {
-            return res.status(400).json({
-                success: false,
-                message: 'Tous les champs (driverId, ownerId, parkingId, reservationId) sont requis.'
-            });
-        }
-
-        const notification = await this.createNotification({
+        const notification = await createNotificationDirect({
             driverId,
             ownerId,
             parkingId,
@@ -170,19 +148,8 @@ exports.createNotificationFromRequest = async (req, res) => {
     }
 };
 
-exports.createNotification = async (notificationData) => {
-    const newNotification = new Notification({
-        driverId: notificationData.driverId,
-        ownerId: notificationData.ownerId,
-        parkingId: notificationData.parkingId,
-        reservationId: notificationData.reservationId,
-        status: notificationData.status || 'en_attente',
-        isRead: false
-    });
-
-    await newNotification.save();
-    return newNotification;
-};
+// Service export for direct usage (for reservationService)
+exports.createNotificationDirectly = createNotificationDirect;
 
 // Marquer une notification comme lue
 exports.markNotificationAsRead = async (req, res) => {
