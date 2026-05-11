@@ -15,8 +15,3 @@
     url = https://github.com/PiDev-2025/Front-end-Back-Office-.git
     branch = main
     update = rebase
-[submodule "Car-Number-Plates-Detection-IA-Model-"]
-    path = Car-Number-Plates-Detection-IA-Model-
-    url = https://github.com/PiDev-2025/Plate-Detector.git
-    branch = main
-    update = rebase
