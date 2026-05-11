@@ -42,6 +42,30 @@
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
+    
+    <!-- Runtime Configuration Injection -->
+    <script>
+      (function() {
+        const hostname = window.location.hostname;
+        const isLocalDev = 
+          hostname === 'localhost' || 
+          hostname === '127.0.0.1' ||
+          hostname.endsWith('.local') ||
+          /^(10|192|172)\.|^192\./.test(hostname);
+        
+        const backendUrl = isLocalDev 
+          ? 'http://localhost:3001'
+          : 'https://smartparking-f86d.onrender.com';
+        
+        window.RUNTIME_CONFIG = window.RUNTIME_CONFIG || {};
+        window.RUNTIME_CONFIG.BACKEND_URL = backendUrl;
+        
+        if (typeof console !== 'undefined') {
+          console.log('[Runtime Config] Backend URL set to:', backendUrl, '(host:', hostname, ')');
+        }
+      })();
+    </script>
+    
     <div id="root"></div>
     <!--
       This HTML file is a template.

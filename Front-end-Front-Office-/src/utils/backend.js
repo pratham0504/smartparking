@@ -11,61 +11,41 @@ function isLocalDevelopmentHost(hostname) {
   );
 }
 
-function isLoopbackUrl(value) {
-  if (!value || typeof value !== 'string') return false;
-
-  try {
-    const parsed = new URL(value);
-    return isLocalDevelopmentHost(parsed.hostname);
-  } catch (_error) {
-    // Fallback for malformed URLs that still contain localhost patterns.
-    return /localhost|127\.0\.0\.1/.test(value);
-  }
-}
-
-function pickSafeBackendUrl(candidate, runningHost) {
-  if (!candidate) return null;
-  if (!runningHost) return candidate;
-
-  const runningInLocalHost = isLocalDevelopmentHost(runningHost);
-  const candidateIsLoopback = isLoopbackUrl(candidate);
-
-  if (!runningInLocalHost && candidateIsLoopback) {
-    return null;
-  }
-
-  return candidate;
-}
-
 export function getBackendUrl() {
-  const runningHost = typeof window !== 'undefined' && window.location && window.location.hostname
-    ? window.location.hostname
-    : '';
-
-  // Prefer runtime overrides (set by hosting) before build-time env vars.
+  // FIRST: Check runtime config (set by index.html injection or hosting)
   if (typeof window !== 'undefined' && window.RUNTIME_CONFIG && window.RUNTIME_CONFIG.BACKEND_URL) {
-    const safeRuntime = pickSafeBackendUrl(window.RUNTIME_CONFIG.BACKEND_URL, runningHost);
-    if (safeRuntime) return safeRuntime;
+    const runtimeUrl = window.RUNTIME_CONFIG.BACKEND_URL;
+    if (runtimeUrl && typeof runtimeUrl === 'string') {
+      console.log('[getBackendUrl] Using RUNTIME_CONFIG:', runtimeUrl);
+      return runtimeUrl;
+    }
   }
 
+  // SECOND: Check window.__BACKEND_URL
   if (typeof window !== 'undefined' && window.__BACKEND_URL) {
-    const safeWindow = pickSafeBackendUrl(window.__BACKEND_URL, runningHost);
-    if (safeWindow) return safeWindow;
+    console.log('[getBackendUrl] Using window.__BACKEND_URL:', window.__BACKEND_URL);
+    return window.__BACKEND_URL;
   }
 
+  // THIRD: Check build-time env vars (fallback)
   if (typeof process !== 'undefined' && process.env) {
     const baked = process.env.REACT_APP_BACKEND_URL || process.env.VITE_BACKEND_URL;
-    const safeBaked = pickSafeBackendUrl(baked, runningHost);
-    if (safeBaked) return safeBaked;
+    if (baked && typeof baked === 'string') {
+      console.log('[getBackendUrl] Using build-time env:', baked);
+      return baked;
+    }
   }
 
+  // FOURTH: Detect based on running hostname
   if (typeof window !== 'undefined' && window.location && window.location.hostname) {
     const isLocal = isLocalDevelopmentHost(window.location.hostname);
-    return isLocal
-      ? 'http://localhost:3001'
-      : PRODUCTION_BACKEND_URL;
+    const chosen = isLocal ? 'http://localhost:3001' : PRODUCTION_BACKEND_URL;
+    console.log('[getBackendUrl] Using hostname detection:', chosen, '(host:', window.location.hostname, ')');
+    return chosen;
   }
 
+  // FALLBACK
+  console.log('[getBackendUrl] Using production fallback:', PRODUCTION_BACKEND_URL);
   return PRODUCTION_BACKEND_URL;
 }
 
