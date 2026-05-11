@@ -260,6 +260,20 @@ server.listen(PORT, '0.0.0.0', () => {
     (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) ||
     Boolean(process.env.RENDER);
   if (startPythonServices) {
+    // Debug: print resolved environment flags so Render logs show why services may be skipped
+    const isVercel = Boolean(process.env.VERCEL);
+    const isLocalLike = process.env.NODE_ENV !== 'production' && !isVercel;
+    console.log('🔎 Service startup flags:', {
+      START_PY_SERVICES: process.env.START_PY_SERVICES,
+      START_PLATE_DETECTOR: process.env.START_PLATE_DETECTOR,
+      START_RFID_BRIDGE: process.env.START_RFID_BRIDGE,
+      NODE_ENV: process.env.NODE_ENV,
+      VERCEL: process.env.VERCEL,
+      RENDER: process.env.RENDER,
+      isVercel,
+      isLocalLike,
+      startPythonServices
+    });
     const projectRoot = path.join(__dirname, '..');
     const isVercel = Boolean(process.env.VERCEL);
     const isLocalLike = process.env.NODE_ENV !== 'production' && !isVercel;
