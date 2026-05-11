@@ -32,8 +32,8 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install --legacy-peer-deps
 
-# Copy requirements.txt and install Python dependencies
-COPY Backend/requirements.txt ./
+# Copy requirements.txt and install Python dependencies (from root of project)
+COPY requirements.txt ./
 RUN echo "📦 Installing Python dependencies from requirements.txt..." && \
     pip3 install -r requirements.txt && \
     echo "✅ Python dependencies installed successfully" && \
