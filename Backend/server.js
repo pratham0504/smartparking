@@ -310,6 +310,12 @@ server.listen(PORT, '0.0.0.0', () => {
     ];
 
     services.forEach(svc => {
+      // Check if script exists first; if not, disable the service
+      if (svc.enabled && !fs.existsSync(svc.script)) {
+        console.log(`⚠️  ${svc.name} script not found at ${svc.script}. Disabling service.`);
+        svc.enabled = false;
+      }
+
       if (!svc.enabled) {
         console.log(`ℹ️  Skipping ${svc.name} (disabled for this environment)`);
         return;
@@ -318,14 +324,6 @@ server.listen(PORT, '0.0.0.0', () => {
       let failureCount = 0;
       let lastFailureTime = 0;
       const startService = () => {
-        if (!fs.existsSync(svc.script)) {
-          console.log(`⚠️  Script not found: ${svc.script}`);
-          if (svc.name === 'plate-detector') {
-            console.log(`   Looked for plate-detector at: ${svc.script}`);
-            console.log(`   Please ensure Car-Number-Plates-Detection-IA-Model- folder is in the project root.`);
-          }
-          return;
-        }
         try {
           console.log(`🔧 Spawning ${svc.name}: ${pythonBin} ${svc.script}`);
           const proc = spawn(pythonBin, [svc.script, ...svc.args], {
