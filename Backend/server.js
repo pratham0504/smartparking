@@ -345,10 +345,19 @@ server.listen(PORT, '0.0.0.0', () => {
           proc.stdout.on('data', data => process.stdout.write(`[${svc.name}] ${data}`));
           proc.stderr.on('data', data => process.stderr.write(`[${svc.name}] ${data}`));
           proc.on('exit', (code) => {
-            failureCount++;
-            lastFailureTime = Date.now();
+            // Don't count clean exits (code 0) as failures; only genuine errors count
+            if (code !== 0) {
+              failureCount++;
+              lastFailureTime = Date.now();
+            }
+            
+            if (code === 0) {
+              console.log(`ℹ️  ${svc.name} exited cleanly. Not restarting.`);
+              return;
+            }
+            
             if (failureCount >= 5) {
-              console.error(`❌ ${svc.name} exited with code ${code} (failed 5 times). Giving up.`);
+              console.error(`❌ ${svc.name} failed ${failureCount} times. Giving up.`);
               return;
             }
             console.log(`⚠️  ${svc.name} exited with code ${code}. Restarting in 5s...`);
