@@ -343,12 +343,13 @@ server.listen(PORT, '0.0.0.0', () => {
       {
         name: 'rfid-bridge',
         enabled:
-          process.env.START_RFID_BRIDGE === 'true' || isLocalLike ||
-          startPythonServices,
+          process.env.START_RFID_BRIDGE === 'true' || isLocalLike,
         script: path.join(__dirname, 'src', 'rfidGateBridge.py'),
         args: [],
         env: {
-          BACKEND_URL: process.env.BACKEND_URL || `http://localhost:${PORT}`,
+          BACKEND_URL:
+            process.env.BACKEND_URL ||
+            (process.env.RENDER ? (process.env.BASE_URL || `http://127.0.0.1:${PORT}`) : `http://localhost:${PORT}`),
         },
       }
     ];
