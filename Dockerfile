@@ -43,6 +43,8 @@ COPY Car-Number-Plates-Detection-IA-Model- /app/Backend/Car-Number-Plates-Detect
 # (temporary; remove once deploy confirms presence)
 RUN echo "--- /app contents after COPY ---" && ls -la /app || true
 RUN echo "--- /app/Car-Number-Plates-Detection-IA-Model- contents ---" && ls -la /app/Car-Number-Plates-Detection-IA-Model- || true
+RUN echo "--- /app/Backend contents after COPY ---" && ls -la /app/Backend || true
+RUN echo "--- /app/Backend/Car-Number-Plates-Detection-IA-Model- contents ---" && ls -la /app/Backend/Car-Number-Plates-Detection-IA-Model- || true
 
 RUN python3 -m venv /app/.venv && \
 	/app/.venv/bin/pip install --upgrade pip setuptools wheel && \

@@ -287,9 +287,12 @@ server.listen(PORT, '0.0.0.0', () => {
     const detectorCandidates = [
       path.join(projectRoot, 'Car-Number-Plates-Detection-IA-Model-', 'indian_plate_detector_tesseract.py'),
       path.join(projectRoot, 'Car-Number-Plates-Detection-IA-Model', 'indian_plate_detector_tesseract.py'),
-      path.join(projectRoot, 'Car-Number-Plates-Detection-IA-Model-', 'indian_plate_detector_tesseract.py'),
-      path.join(projectRoot, 'Car-Number-Plates-Detection-IA-Model', 'indian_plate_detector_tesseract.py'),
-      // Also check inside Backend (where some builds place service files)
+      // Check inside Backend subfolder (some CI/CD copy project into /app and place service files under Backend)
+      path.join(projectRoot, 'Backend', 'Car-Number-Plates-Detection-IA-Model-', 'indian_plate_detector_tesseract.py'),
+      path.join(projectRoot, 'Backend', 'Car-Number-Plates-Detection-IA-Model', 'indian_plate_detector_tesseract.py'),
+      // Also check relative to current __dirname (which may be /app or /app/Backend)
+      path.join(__dirname, 'Backend', 'Car-Number-Plates-Detection-IA-Model-', 'indian_plate_detector_tesseract.py'),
+      path.join(__dirname, 'Backend', 'Car-Number-Plates-Detection-IA-Model', 'indian_plate_detector_tesseract.py'),
       path.join(__dirname, 'Car-Number-Plates-Detection-IA-Model-', 'indian_plate_detector_tesseract.py'),
       path.join(__dirname, 'Car-Number-Plates-Detection-IA-Model', 'indian_plate_detector_tesseract.py')
     ];
