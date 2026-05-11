@@ -14,7 +14,8 @@ from datetime import datetime
 import re
 
 # ========== CONFIGURATION ==========
-ARDUINO_PORT = '/dev/cu.usbserial-A5069RR4'  # Your Arduino USB port (macOS)
+DEFAULT_ARDUINO_PORT = '/dev/cu.usbserial-A5069RR4'  # Your Arduino USB port (macOS)
+ARDUINO_PORT = os.getenv('ARDUINO_PORT', DEFAULT_ARDUINO_PORT).strip()
 ARDUINO_BAUD = 115200
 BACKEND_URL = os.getenv('BACKEND_URL', 'http://localhost:3001').rstrip('/')  # Your backend URL
 RFID_AUTH_ENDPOINT = f'{BACKEND_URL}/api/rfid/authenticate'
@@ -54,6 +55,10 @@ def log_debug(msg):
 # ========== ARDUINO CONNECTION ==========
 def connect_arduino():
     """Establish connection to Arduino"""
+    if os.getenv('RENDER') == 'true' and 'ARDUINO_PORT' not in os.environ:
+        log_info('RENDER=true and no ARDUINO_PORT was provided; skipping RFID bridge startup.')
+        return None
+
     try:
         log_info(f"Connecting to Arduino on {ARDUINO_PORT}@{ARDUINO_BAUD}...")
         arduino = serial.Serial(ARDUINO_PORT, ARDUINO_BAUD, timeout=CONNECTION_TIMEOUT)
