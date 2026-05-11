@@ -46,23 +46,25 @@
     <!-- Runtime Configuration Injection -->
     <script>
       (function() {
+        console.log('[Init] Starting runtime config injection...');
         const hostname = window.location.hostname;
+        console.log('[Init] Current hostname:', hostname);
+        
         const isLocalDev = 
           hostname === 'localhost' || 
           hostname === '127.0.0.1' ||
-          hostname.endsWith('.local') ||
-          /^(10|192|172)\.|^192\./.test(hostname);
+          hostname.endsWith('.local');
         
         const backendUrl = isLocalDev 
           ? 'http://localhost:3001'
           : 'https://smartparking-f86d.onrender.com';
         
-        window.RUNTIME_CONFIG = window.RUNTIME_CONFIG || {};
-        window.RUNTIME_CONFIG.BACKEND_URL = backendUrl;
+        window.RUNTIME_CONFIG = {
+          BACKEND_URL: backendUrl
+        };
         
-        if (typeof console !== 'undefined') {
-          console.log('[Runtime Config] Backend URL set to:', backendUrl, '(host:', hostname, ')');
-        }
+        console.log('[Init] ✓ RUNTIME_CONFIG.BACKEND_URL set to:', window.RUNTIME_CONFIG.BACKEND_URL);
+        console.log('[Init] isLocalDev:', isLocalDev);
       })();
     </script>
     
