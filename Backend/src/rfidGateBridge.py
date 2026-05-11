@@ -9,13 +9,14 @@ import requests
 import time
 import sys
 import json
+import os
 from datetime import datetime
 import re
 
 # ========== CONFIGURATION ==========
 ARDUINO_PORT = '/dev/cu.usbserial-A5069RR4'  # Your Arduino USB port (macOS)
 ARDUINO_BAUD = 115200
-BACKEND_URL = 'http://localhost:3001'  # Your backend URL
+BACKEND_URL = os.getenv('BACKEND_URL', 'http://localhost:3001').rstrip('/')  # Your backend URL
 RFID_AUTH_ENDPOINT = f'{BACKEND_URL}/api/rfid/authenticate'
 RFID_EXIT_ENDPOINT = f'{BACKEND_URL}/api/rfid/exit'
 RFID_GATE_EVENTS_ENDPOINT = f'{BACKEND_URL}/api/rfid/gate-events'

@@ -3,16 +3,18 @@ const path = require("path");
 const fs = require("fs");
 const envLocalPath = path.join(__dirname, ".env.local");
 
+// Always load the base env first, then let .env.local override it for local dev.
+require("dotenv").config();
+
 if (fs.existsSync(envLocalPath)) {
   console.log("✅ Loading .env.local for local development");
-  require("dotenv").config({ path: envLocalPath });
+  require("dotenv").config({ path: envLocalPath, override: true });
 } else {
   console.log("ℹ️  No .env.local found, using .env");
-  require("dotenv").config();
 }
 
 // Unified Port Definition
-const PORT = process.env.PORT || 10000; 
+const PORT = process.env.PORT || 3001; 
 
 const express = require("express");
 const jwt = require("jsonwebtoken");
@@ -253,33 +255,56 @@ app.get("/", (req, res) => {
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server started on port ${PORT}!`);
   
-  const startPythonServices = process.env.START_PY_SERVICES === 'true';
+  const startPythonServices =
+    process.env.START_PY_SERVICES === 'true' ||
+    (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) ||
+    Boolean(process.env.RENDER);
   if (startPythonServices) {
     const projectRoot = path.join(__dirname, '..');
+    const isVercel = Boolean(process.env.VERCEL);
+    const isLocalLike = process.env.NODE_ENV !== 'production' && !isVercel;
+    const pythonBin = process.env.PYTHON_BIN || 'python3';
+
     const services = [
       {
         name: 'plate-detector',
+        enabled: process.env.START_PLATE_DETECTOR === 'true' || isLocalLike,
         script: path.join(projectRoot, 'Car-Number-Plates-Detection-IA-Model-', 'indian_plate_detector_tesseract.py'),
-        args: []
+        args: [],
+        env: {
+          DETECTOR_HOST: process.env.DETECTOR_HOST || '0.0.0.0',
+          DETECTOR_PORT: process.env.DETECTOR_PORT || '5002',
+        },
       },
       {
         name: 'rfid-bridge',
+        enabled: process.env.START_RFID_BRIDGE === 'true' || isLocalLike,
         script: path.join(__dirname, 'src', 'rfidGateBridge.py'),
-        args: []
+        args: [],
+        env: {
+          BACKEND_URL: process.env.BACKEND_URL || `http://localhost:${PORT}`,
+        },
       }
     ];
 
     services.forEach(svc => {
+      if (!svc.enabled) {
+        console.log(`ℹ️  Skipping ${svc.name} (disabled for this environment)`);
+        return;
+      }
+
       const startService = () => {
         if (!fs.existsSync(svc.script)) return;
         try {
-          console.log(`🔧 Spawning ${svc.name}: python3 ${svc.script}`);
-          const proc = spawn('python3', [svc.script, ...svc.args], {
+          console.log(`🔧 Spawning ${svc.name}: ${pythonBin} ${svc.script}`);
+          const proc = spawn(pythonBin, [svc.script, ...svc.args], {
             cwd: path.dirname(svc.script),
-            env: { ...process.env },
+            env: { ...process.env, ...svc.env },
             stdio: ['ignore', 'pipe', 'pipe']
           });
 
+          proc.stdout.on('data', data => process.stdout.write(`[${svc.name}] ${data}`));
+          proc.stderr.on('data', data => process.stderr.write(`[${svc.name}] ${data}`));
           proc.on('exit', () => setTimeout(startService, 3000));
         } catch (err) {
           console.error(`❌ Exception starting ${svc.name}:`, err);
