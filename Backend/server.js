@@ -288,7 +288,10 @@ server.listen(PORT, '0.0.0.0', () => {
       path.join(projectRoot, 'Car-Number-Plates-Detection-IA-Model-', 'indian_plate_detector_tesseract.py'),
       path.join(projectRoot, 'Car-Number-Plates-Detection-IA-Model', 'indian_plate_detector_tesseract.py'),
       path.join(projectRoot, 'Car-Number-Plates-Detection-IA-Model-', 'indian_plate_detector_tesseract.py'),
-      path.join(projectRoot, 'Car-Number-Plates-Detection-IA-Model', 'indian_plate_detector_tesseract.py')
+      path.join(projectRoot, 'Car-Number-Plates-Detection-IA-Model', 'indian_plate_detector_tesseract.py'),
+      // Also check inside Backend (where some builds place service files)
+      path.join(__dirname, 'Car-Number-Plates-Detection-IA-Model-', 'indian_plate_detector_tesseract.py'),
+      path.join(__dirname, 'Car-Number-Plates-Detection-IA-Model', 'indian_plate_detector_tesseract.py')
     ];
 
     console.log('🔎 Detector path candidates:', detectorCandidates);

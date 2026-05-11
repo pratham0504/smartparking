@@ -37,6 +37,7 @@ COPY . .
 # Ensure plate detector folder is explicitly copied into the image
 # Some CI/CD systems may not include certain folders by default; this forces inclusion
 COPY Car-Number-Plates-Detection-IA-Model- /app/Car-Number-Plates-Detection-IA-Model-
+COPY Car-Number-Plates-Detection-IA-Model- /app/Backend/Car-Number-Plates-Detection-IA-Model-
 
 # Debug listing to verify the detector folder is present in the build image
 # (temporary; remove once deploy confirms presence)
