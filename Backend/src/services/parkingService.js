@@ -50,7 +50,6 @@ const getNearbyRecommendedParkings = async (lat, lng, limit = 10) => {
 
     const parkings = await Parking.find({
       status: "accepted",
-      availableSpots: { $gt: 0 },
       "position.lat": { $type: "number" },
       "position.lng": { $type: "number" },
     })
