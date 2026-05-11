@@ -22,6 +22,17 @@ This system enables real-time RFID card authentication at parking gates, integra
 - Sends authentication requests to backend
 - Returns ALLOW/DENY to Arduino for gate control
 
+## Local Environment Variables
+
+Create `Backend/.env` from `Backend/.env.sample` and set the serial port for your machine:
+
+```env
+ARDUINO_PORT=/dev/cu.usbserial-A5069RR4
+START_RFID_BRIDGE=true
+```
+
+Use your own device path if it differs. On Render, the bridge exits cleanly when `RENDER=true` and no `ARDUINO_PORT` is provided.
+
 ## Installation Steps
 
 ### Step 1: Arduino Setup
@@ -69,7 +80,7 @@ const char* gateId = "gate-a";             // Gate identifier
 
 ### Python Bridge Configuration (rfidGateBridge.py)
 ```python
-ARDUINO_PORT = '/dev/ttyUSB0'        # Change based on your system
+ARDUINO_PORT = os.getenv('ARDUINO_PORT', '/dev/cu.usbserial-A5069RR4')
 ARDUINO_BAUD = 115200               # Must match Arduino config
 BACKEND_URL = 'http://localhost:3001'
 ```
