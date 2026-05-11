@@ -5,6 +5,7 @@ Listens to Arduino serial port for RFID card scans and communicates with backend
 """
 
 import serial
+from serial.tools import list_ports
 import requests
 import time
 import sys
@@ -52,6 +53,46 @@ def log_success(msg):
 def log_debug(msg):
     log_msg("DEBUG", msg)
 
+def get_serial_candidates():
+    """Return a compact list of likely Arduino serial ports on this machine."""
+    detected = []
+    try:
+        detected = sorted({port.device for port in list_ports.comports() if port.device})
+    except Exception as e:
+        log_debug(f"Unable to enumerate serial ports: {e}")
+
+    common_mac_ports = [
+        '/dev/cu.usbmodem*',
+        '/dev/cu.usbserial*',
+        '/dev/tty.usbmodem*',
+        '/dev/tty.usbserial*',
+    ]
+    common_linux_ports = [
+        '/dev/ttyUSB*',
+        '/dev/ttyACM*',
+    ]
+
+    return {
+        'configured': ARDUINO_PORT,
+        'detected': detected,
+        'macHints': common_mac_ports,
+        'linuxHints': common_linux_ports,
+    }
+
+def log_serial_diagnostics(prefix='Serial diagnostics'):
+    """Print the configured port and likely alternatives for easier local setup."""
+    candidates = get_serial_candidates()
+    log_info(prefix)
+    log_info(f"Configured ARDUINO_PORT: {candidates['configured']}")
+    if candidates['detected']:
+        log_info(f"Detected serial devices: {', '.join(candidates['detected'])}")
+    else:
+        log_info("Detected serial devices: none found")
+    log_info(
+        "macOS hints: " + ', '.join(candidates['macHints']) +
+        " | Linux hints: " + ', '.join(candidates['linuxHints'])
+    )
+
 # ========== ARDUINO CONNECTION ==========
 def connect_arduino():
     """Establish connection to Arduino"""
@@ -66,6 +107,7 @@ def connect_arduino():
         return arduino
     except serial.SerialException as e:
         log_error(f"Failed to connect to Arduino: {e}")
+        log_serial_diagnostics("Arduino port check")
         return None
 
 # ========== MESSAGE PARSING ==========
@@ -289,6 +331,7 @@ def main():
     log_info("=" * 50)
     log_info(f"Backend URL: {BACKEND_URL}")
     log_info(f"Arduino Port: {ARDUINO_PORT}")
+    log_serial_diagnostics("Startup serial check")
     
     if os.getenv('RENDER') == 'true' and 'ARDUINO_PORT' not in os.environ:
         log_info('RENDER=true and no ARDUINO_PORT was provided; exiting RFID bridge.')
