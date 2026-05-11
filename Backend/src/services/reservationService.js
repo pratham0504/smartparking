@@ -7,12 +7,16 @@ const mongoose = require('mongoose');
 const { isValidObjectId } = require('mongoose');
 const Notification = require('../models/notificationModel'); // Assurez-vous que le chemin est correct
 const Slot = require('../models/slotModel');
+const { emitParkingUpdate } = require('../utils/parkingRealtime');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto'); // Add crypto module
 const { getReservationConfirmationTemplate, getReservationRejectionTemplate } = require('../utils/reservationMailTemplate');
 
 const ACTIVE_RESERVATION_STATUSES = ['pending', 'accepted', 'confirmed', 'active', 'in-progress'];
 const EMERGENCY_PURPOSES = ['ambulance', 'fire', 'police', 'medical', 'other'];
+const EXPIRY_CLEANUP_INTERVAL_MS = Number(process.env.RESERVATION_EXPIRY_CHECK_INTERVAL_MS || 60000);
+
+let expiryCleanupTimer = null;
 
 const parseSpotNumber = (spotId) => {
   const match = (spotId || '').match(/(\d+)/);
@@ -908,6 +912,100 @@ const getReservationsByMatricule = async (matricule) => {
   }
 };
 
+const releaseExpiredReservations = async ({ io } = {}) => {
+  const now = new Date();
+  const expirableStatuses = ['pending', 'accepted', 'confirmed', 'active', 'in-progress'];
+
+  const expiredReservations = await Reservation.find({
+    status: { $in: expirableStatuses },
+    endTime: { $lte: now }
+  });
+
+  if (!expiredReservations.length) {
+    return { processed: 0, releasedSpots: 0 };
+  }
+
+  const parkingCache = new Map();
+  const dirtyParkingIds = new Set();
+  const parkingReleaseCounts = new Map();
+  let releasedSpots = 0;
+
+  const getParkingCached = async (parkingId) => {
+    const key = String(parkingId);
+    if (parkingCache.has(key)) return parkingCache.get(key);
+    const parking = await Parking.findById(parkingId);
+    parkingCache.set(key, parking);
+    return parking;
+  };
+
+  for (const reservation of expiredReservations) {
+    const isPending = reservation.status === 'pending';
+    const nextStatus = isPending ? 'canceled' : 'completed';
+    const parking = await getParkingCached(reservation.parkingId);
+
+    if (parking && Array.isArray(parking.spots)) {
+      const spot = parking.spots.find((s) => s.id === reservation.spotId);
+      if (spot && spot.status === 'reserved') {
+        const reservedByMatches =
+          !spot.reservedBy || String(spot.reservedBy) === String(reservation.userId);
+
+        if (reservedByMatches) {
+          spot.status = 'available';
+          spot.reservedBy = null;
+          spot.reservationTime = null;
+          parking.availableSpots = parking.spots.filter((s) => s.status === 'available').length;
+          dirtyParkingIds.add(String(parking._id));
+          releasedSpots += 1;
+          parkingReleaseCounts.set(
+            String(parking._id),
+            (parkingReleaseCounts.get(String(parking._id)) || 0) + 1
+          );
+        }
+      }
+    }
+
+    reservation.status = nextStatus;
+    await reservation.save();
+  }
+
+  for (const parkingId of dirtyParkingIds) {
+    const parking = parkingCache.get(parkingId);
+    if (!parking) continue;
+    await parking.save({ validateBeforeSave: false });
+
+    if (io) {
+      emitParkingUpdate(io, parking, {
+        reason: 'reservation_expired_cleanup',
+        releasedSpots: parkingReleaseCounts.get(parkingId) || 0,
+      });
+    }
+  }
+
+  return { processed: expiredReservations.length, releasedSpots };
+};
+
+const startReservationExpiryScheduler = ({ io, intervalMs = EXPIRY_CLEANUP_INTERVAL_MS } = {}) => {
+  if (expiryCleanupTimer) return;
+
+  const runCleanup = async () => {
+    try {
+      const result = await releaseExpiredReservations({ io });
+      if (result.processed > 0) {
+        console.log(
+          `🧹 Expiry cleanup: processed ${result.processed} reservation(s), released ${result.releasedSpots} spot(s)`
+        );
+      }
+    } catch (error) {
+      console.error('❌ Reservation expiry cleanup failed:', error.message);
+    }
+  };
+
+  // Run once at startup so stale reservations are cleared quickly.
+  runCleanup();
+  expiryCleanupTimer = setInterval(runCleanup, intervalMs);
+  console.log(`🕒 Reservation expiry cleanup scheduler started (${intervalMs}ms)`);
+};
+
 module.exports = {
   checkAvailability,
   createReservation,
@@ -922,5 +1020,7 @@ module.exports = {
   getOwnerReservations,
   getReservationsByUserId,
   updateReservationStatusPayment,
-  getReservationsByMatricule
+  getReservationsByMatricule,
+  releaseExpiredReservations,
+  startReservationExpiryScheduler
 };

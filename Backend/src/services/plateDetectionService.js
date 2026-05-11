@@ -8,6 +8,7 @@ const os = require('os');
 // - On Vercel/serverless backend: allow forwarding to Render backend detect-url endpoint.
 const INTERNAL_DETECTOR_URL = 'http://127.0.0.1:5002/detect_plate';
 const REMOTE_RENDER_DETECT_URL = 'https://smartparking-f86d.onrender.com/api/plate-detection/detect-url';
+const MIN_ACCEPTED_CONFIDENCE = Number(process.env.PLATE_MIN_CONFIDENCE || 0.35);
 
 function resolveDetectorUrl() {
     if (process.env.PLATE_DETECTOR_API_URL) return process.env.PLATE_DETECTOR_API_URL;
@@ -123,8 +124,16 @@ class PlateDetectionService {
             console.log("Formatted Indian plate:", formatted);
             return formatted;
         }
-        
-        // If pattern doesn't match, reject it instead of propagating OCR noise.
+
+        // Be tolerant with OCR output in production: keep plausible raw plate text,
+        // then downstream matching can normalize/fuzzy-match it.
+        const hasLetters = /[A-Z]/.test(cleanText);
+        const hasDigits = /\d/.test(cleanText);
+        if (hasLetters && hasDigits && cleanText.length >= 7 && cleanText.length <= 12) {
+            console.log("Pattern not exact, using plausible raw plate text:", cleanText);
+            return cleanText;
+        }
+
         console.log("Pattern not matched, rejecting OCR text:", cleanText);
         return null;
     }
@@ -176,7 +185,7 @@ class PlateDetectionService {
                     }
 
                     const standardizedPlateText = this.standardizeIndianPlate(proxyResult.plateText);
-                    if (!standardizedPlateText || (proxyResult.confidence || 0) < 0.5) {
+                    if (!standardizedPlateText || (proxyResult.confidence || 0) < MIN_ACCEPTED_CONFIDENCE) {
                         return {
                             success: false,
                             plateText: null,
@@ -259,7 +268,7 @@ class PlateDetectionService {
 
                 // Reject only clearly invalid/very-low-confidence detections.
                 // Real detector responses in this project often return 0.6-1.0 for valid plates.
-                if (!standardizedPlateText || confidence < 0.5) {
+                if (!standardizedPlateText || confidence < MIN_ACCEPTED_CONFIDENCE) {
                     console.log('⚠️ Rejecting low-confidence or invalid plate detection:', {
                         plateText,
                         normalizedPlate,

@@ -176,6 +176,7 @@ const passageRoutes = require('./src/routes/passageRoutes');
 const rfidGateRoutes = require('./src/routes/rfidGateRoutes');
 
 const { register, metricsMiddleware } = require('./src/monitoring');
+const { startReservationExpiryScheduler } = require('./src/services/reservationService');
 const claimErrorHandler = require('./src/middlewares/claimErrorHandler');
 
 app.use(metricsMiddleware);
@@ -414,5 +415,10 @@ server.listen(PORT, '0.0.0.0', () => {
       };
       startService();
     });
+  }
+
+  // Keep parking slots in sync by auto-releasing expired reservations.
+  if (process.env.NODE_ENV !== 'test') {
+    startReservationExpiryScheduler({ io: app.get('io') });
   }
 });
