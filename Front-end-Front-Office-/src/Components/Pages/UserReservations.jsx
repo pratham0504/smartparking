@@ -271,8 +271,11 @@ const UserReservations = () => {
         }
     };
 
-    const getStatusColor = (status) => {
-        switch(status) {
+    const getStatusColor = (status, endTime) => {
+        const isFinished = status === 'accepted' && endTime && new Date(endTime) <= new Date();
+        const displayStatus = isFinished ? 'completed' : status;
+
+        switch(displayStatus) {
             case 'accepted':
                 return {
                     style: {
@@ -288,6 +291,14 @@ const UserReservations = () => {
                         color: '#92400e'
                     },
                     label: 'pending'
+                };
+            case 'completed':
+                return {
+                    style: {
+                        backgroundColor: '#dbeafe',
+                        color: '#1d4ed8'
+                    },
+                    label: 'completed'
                 };
             default:
                 return {
@@ -454,7 +465,7 @@ const UserReservations = () => {
     };
 
     const ReservationCard = React.memo(({ reservation }) => {
-        const statusInfo = getStatusColor(reservation.status);
+        const statusInfo = getStatusColor(reservation.status, reservation.endTime);
         const paymentStatusInfo = getPaymentStatusColor(reservation.paymentStatus);
         
         useEffect(() => {

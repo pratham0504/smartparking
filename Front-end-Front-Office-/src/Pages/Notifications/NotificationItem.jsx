@@ -185,6 +185,16 @@ const ParkingReservationNotification = ({ notification, onMarkAsRead }) => {
         </div>
       );
     } else if (
+      reservation.status === "completed" ||
+      notification.status === "completed"
+    ) {
+      return (
+        <div className="p-2 bg-[#1d4ed8] border border-blue-200 rounded-md hover:bg-blue-700 text-white text-center transition-colors shadow-sm">
+          <IoCheckmarkCircle className="inline-block mr-2" />
+          Reservation Completed
+        </div>
+      );
+    } else if (
       reservation.status === "accepted" ||
       notification.status === "acceptée"
     ) {

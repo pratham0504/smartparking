@@ -335,35 +335,6 @@ const createReservation = async (reservationData) => {
     await reservation.save();
     console.log("parking dataaa ", parking);
 
-    // Auto-approve if the spot is available (no overlaps and physical checks passed)
-    const spotIsAvailable = spot.status === 'available' && parking.availableSpots > 0;
-
-    if (spotIsAvailable) {
-      try {
-        // Accept the reservation immediately and sync parking spot state
-        const accepted = await updateReservationStatus(reservation._id, 'accepted', null);
-        console.log('✅ Reservation auto-accepted:', accepted._id);
-        
-        // Get owner ID correctly (it might be an object or string)
-        const ownerId = parking.Owner?._id || parking.Owner || parking.get?.("Owner");
-        
-        // Create notification for owner about the approved booking
-        await notificationService.createNotificationDirectly({
-          driverId: reservationData.userId,
-          ownerId: ownerId,
-          parkingId: reservationData.parkingId,
-          reservationId: reservation._id,
-          status: "acceptée",  // Notify owner that booking was approved
-        });
-        console.log('✅ Notification sent to owner about approved booking');
-        
-        return accepted;
-      } catch (err) {
-        console.error('❌ Error auto-accepting reservation, falling back to pending:', err);
-        // Fall through to create pending notification
-      }
-    }
-
     // Get owner ID correctly (it might be an object or string)
     const ownerId = parking.Owner?._id || parking.Owner || parking.get?.("Owner");
 
