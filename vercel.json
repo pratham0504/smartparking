@@ -1,5 +1,5 @@
 {
-  "buildCommand": "cd Front-end-Front-Office- && npm ci --legacy-peer-deps && npm run build",
+  "buildCommand": "cd Front-end-Front-Office- && npm install --legacy-peer-deps && npm run build",
   "outputDirectory": "Front-end-Front-Office-/build",
   "installCommand": "echo 'Skipping root install; frontend dependencies are installed in buildCommand'",
   "rewrites": [
