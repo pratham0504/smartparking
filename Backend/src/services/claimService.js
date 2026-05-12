@@ -459,6 +459,58 @@ const createClaim = async (req, res) => {
             console.log('ℹ️ No reservation found or plate not detected - vehicle owner notification skipped');
         }
 
+        // Notify the parking/space owner in-app so they can review and resolve the claim
+        if (reservationId) {
+            try {
+                const reservationWithParking = await Reservation.findById(reservationId)
+                    .populate('parkingId', 'name Owner')
+                    .populate('userId', 'firstName name email');
+
+                const parkingOwnerId = reservationWithParking?.parkingId?.Owner;
+                const claimant = await User.findById(req.user._id).select('firstName name email');
+
+                if (parkingOwnerId && String(parkingOwnerId) !== String(req.user._id)) {
+                    const parkingOwnerNotification = new Notification({
+                        ownerId: parkingOwnerId,
+                        driverId: req.user._id,
+                        claimId: claim._id,
+                        reservationId: reservationId,
+                        parkingId: reservationWithParking?.parkingId?._id || null,
+                        type: 'claim_status_update',
+                        title: `Claim registered for ${reservationWithParking?.parkingId?.name || 'your parking'}`,
+                        message: `A claim has been registered and needs your review. Claim ID: ${claim.claimId}`,
+                        plateNumber: plateNumber,
+                        evidenceUrl: imageUrl,
+                        isRead: false
+                    });
+
+                    await parkingOwnerNotification.save();
+                    console.log('✅ In-app claim notification created for parking owner:', parkingOwnerNotification._id);
+
+                    const io = req.app.get('io');
+                    if (io) {
+                        const socketRoomName = `user_${parkingOwnerId}`;
+                        console.log('📡 Emitting claim notification to parking owner room:', socketRoomName);
+
+                        io.to(socketRoomName).emit('newNotification', {
+                            ...parkingOwnerNotification.toObject(),
+                            driverId: {
+                                _id: req.user._id,
+                                name: claimant?.firstName || claimant?.name || 'User',
+                                email: claimant?.email
+                            },
+                            parkingId: reservationWithParking?.parkingId || null,
+                            claimId: claim
+                        });
+                    }
+                } else {
+                    console.log('ℹ️ Parking owner notification skipped (same user or missing parking owner)');
+                }
+            } catch (parkingOwnerNotificationError) {
+                console.error('❌ Failed to create parking owner claim notification:', parkingOwnerNotificationError);
+            }
+        }
+
         res.status(201).json({
             success: true,
             claim,

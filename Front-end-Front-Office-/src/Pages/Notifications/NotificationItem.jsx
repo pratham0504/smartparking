@@ -313,7 +313,10 @@ const NotificationItem = ({
   }
 
   // Handle Claim Notifications
-  if (notification.type === 'claim_against_vehicle' && notification.claimId) {
+  if (
+    (notification.type === 'claim_against_vehicle' || notification.type === 'claim_status_update') &&
+    notification.claimId
+  ) {
     const claimant = notification.driverId || {};
     
     return (
@@ -332,7 +335,7 @@ const NotificationItem = ({
           <div className="flex-1">
             <div className="flex justify-between items-start mb-2">
               <h3 className="font-bold text-gray-800 text-lg">
-                {notification.title || "Claim Against Your Vehicle"}
+                {notification.title || "Claim Notification"}
               </h3>
               <span className="text-xs text-gray-500 whitespace-nowrap ml-2">
                 {format(new Date(notification.createdAt), "dd MMM yyyy 'at' HH:mm", {
@@ -375,7 +378,7 @@ const NotificationItem = ({
                 href="/UserClaims"
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm font-medium"
               >
-                View My Claims
+                View Claims
               </a>
               <a
                 href="/contact"
