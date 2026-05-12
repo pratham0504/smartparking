@@ -2909,16 +2909,16 @@ const SecLocation = () => {
               {/* Parking markers */}
               {filteredParkings
                 .filter(parking => {
-                  // Validate coordinates
-                  const lat = parseFloat(parking.latitude);
-                  const lng = parseFloat(parking.longitude);
+                  // Validate coordinates - use 'lat' and 'lng' (not latitude/longitude)
+                  const lat = parseFloat(parking.lat);
+                  const lng = parseFloat(parking.lng);
                   return !isNaN(lat) && !isNaN(lng) && 
                          lat >= -90 && lat <= 90 && 
                          lng >= -180 && lng <= 180;
                 })
                 .map((parking) => {
-                  const lat = parseFloat(parking.latitude);
-                  const lng = parseFloat(parking.longitude);
+                  const lat = parseFloat(parking.lat);
+                  const lng = parseFloat(parking.lng);
                   
                   return (
                     <Marker
@@ -2936,12 +2936,12 @@ const SecLocation = () => {
 
               {/* Active parking info window */}
               {activeParking && 
-               !isNaN(parseFloat(activeParking.latitude)) && 
-               !isNaN(parseFloat(activeParking.longitude)) && (
+               !isNaN(parseFloat(activeParking.lat)) && 
+               !isNaN(parseFloat(activeParking.lng)) && (
                 <InfoWindow
                   position={{ 
-                    lat: parseFloat(activeParking.latitude), 
-                    lng: parseFloat(activeParking.longitude) 
+                    lat: parseFloat(activeParking.lat), 
+                    lng: parseFloat(activeParking.lng) 
                   }}
                   onCloseClick={() => setActiveParking(null)}
                 >
