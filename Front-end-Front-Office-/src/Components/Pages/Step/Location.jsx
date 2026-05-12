@@ -201,7 +201,7 @@ const createCustomMarker = (color) => {
 };
 
 const SecLocation = () => {
-  const { isLoaded } = useGoogleMaps();
+  const { isLoaded, loadError } = useGoogleMaps();
   const { searchData, updateSearchData } = useSearch();
   const { isFavorite, toggleFavorite } = useFavorites();
   const navigate = useNavigate();
@@ -2367,7 +2367,32 @@ const SecLocation = () => {
     </div>
   );
 
-  if (!isLoaded)
+  if (!isLoaded) {
+    if (loadError) {
+      return (
+        <div className="flex justify-center items-center h-[70vh]">
+          <div className="text-center bg-red-50 p-8 rounded-lg max-w-md">
+            <div className="text-red-600 text-5xl mb-4">❌</div>
+            <h2 className="text-xl font-bold text-red-700 mb-2">Maps Load Error</h2>
+            <p className="text-red-600 mb-4">{loadError.message || 'Failed to load Google Maps'}</p>
+            <p className="text-gray-600 text-sm mb-4">This could be due to:</p>
+            <ul className="text-gray-600 text-sm text-left mb-4">
+              <li>• Invalid or expired API key</li>
+              <li>• Network connectivity issues</li>
+              <li>• API quotas exceeded</li>
+              <li>• Billing issues with Google Cloud account</li>
+            </ul>
+            <button 
+              onClick={() => window.location.reload()} 
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="flex justify-center items-center h-[70vh]">
         <div className="text-center">
@@ -2376,6 +2401,7 @@ const SecLocation = () => {
         </div>
       </div>
     );
+  }
 
   return (
     <div className="flex flex-col h-full">

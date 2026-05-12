@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 const Notification = require('../models/notificationModel');
 const Parking = require('../models/parkingModel');
+const User = require('../models/userModel');
+const Reservation = require('../models/reservationModel');
+const nodemailer = require('nodemailer');
+const { getNotificationTemplate } = require('../utils/notificationMailTemplate');
 
 exports.getUserNotifications = async (req, res) => {
     try {
@@ -88,6 +92,7 @@ exports.getUserNotifications = async (req, res) => {
 // Service function to create notification (used by reservationService and other services)
 const createNotificationDirect = async (notificationData) => {
     try {
+        // 1. Create notification document
         const newNotification = new Notification({
             driverId: notificationData.driverId,
             ownerId: notificationData.ownerId,
@@ -99,6 +104,54 @@ const createNotificationDirect = async (notificationData) => {
 
         await newNotification.save();
         console.log('✅ Notification created:', newNotification._id);
+
+        // 2. Fetch related data for email
+        try {
+            const [owner, reservation, parking] = await Promise.all([
+                User.findById(notificationData.ownerId),
+                Reservation.findById(notificationData.reservationId).populate('userId'),
+                Parking.findById(notificationData.parkingId)
+            ]);
+
+            if (!owner || !reservation || !parking) {
+                console.warn('⚠️ Missing data for email:', { owner: !!owner, reservation: !!reservation, parking: !!parking });
+                return newNotification;
+            }
+
+            // 3. Send email to owner
+            const transporter = nodemailer.createTransport({
+                service: 'gmail',
+                secure: true,
+                auth: {
+                    user: process.env.EMAIL_USER,
+                    pass: process.env.EMAIL_PASS
+                }
+            });
+
+            const mailOptions = {
+                from: process.env.EMAIL_USER,
+                to: owner.email,
+                subject: notificationData.status === 'acceptée' 
+                    ? '✅ Reservation Accepted - New Booking Confirmed'
+                    : '⏳ New Reservation Request - Action Required',
+                html: getNotificationTemplate(
+                    owner.name || owner.email.split('@')[0],
+                    reservation.userId.name || reservation.userId.email.split('@')[0],
+                    parking.name,
+                    reservation.startTime,
+                    reservation.endTime,
+                    reservation.spotId,
+                    notificationData.status
+                )
+            };
+
+            await transporter.sendMail(mailOptions);
+            console.log(`✅ Notification email sent to owner: ${owner.email}`);
+        } catch (emailError) {
+            console.error('⚠️ Error sending notification email:', emailError.message);
+            // Don't throw - notification was created successfully, email send is secondary
+        }
+
         return newNotification;
     } catch (error) {
         console.error('❌ Error creating notification:', error);
