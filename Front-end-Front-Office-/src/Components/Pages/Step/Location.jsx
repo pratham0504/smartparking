@@ -533,6 +533,17 @@ const SecLocation = () => {
                 icon: parking.weather.icon,
               }
             : null,
+          // include spots if available (may contain coordinates)
+          spots: Array.isArray(parking.spots)
+            ? parking.spots.map((s) => ({
+                id: s.id,
+                status: s.status,
+                // try common lat/lng fields if present
+                lat: s.lat || s.latitude || (s.position && s.position.lat) || null,
+                lng: s.lng || s.longitude || (s.position && s.position.lng) || null,
+                meta: s,
+              }))
+            : [],
         }));
 
         console.log("Formatted parkings with weather:", formattedParkings);
@@ -1015,11 +1026,13 @@ const SecLocation = () => {
         const bounds = new mapboxgl.LngLatBounds();
 
         // Clear existing markers
-        if (markersRef.current.parkingMarkers) {
-          markersRef.current.parkingMarkers.forEach((marker) =>
-            marker.remove()
-          );
+          if (markersRef.current.parkingMarkers) {
+          markersRef.current.parkingMarkers.forEach((marker) => marker.remove());
           markersRef.current.parkingMarkers = [];
+        }
+        if (markersRef.current.spotMarkers) {
+          markersRef.current.spotMarkers.forEach((m) => m.remove());
+          markersRef.current.spotMarkers = [];
         }
 
         // Add new markers
@@ -1036,6 +1049,29 @@ const SecLocation = () => {
           const marker = new mapboxgl.Marker(el)
             .setLngLat([parking.lng, parking.lat])
             .addTo(map.current);
+
+          // add spot markers if spots have coordinates
+          if (Array.isArray(parking.spots) && parking.spots.length > 0) {
+            parking.spots.forEach((spot) => {
+              if (spot.lat && spot.lng) {
+                const spotEl = document.createElement('div');
+                spotEl.className = 'parking-spot-marker';
+                spotEl.style.width = '8px';
+                spotEl.style.height = '8px';
+                spotEl.style.borderRadius = '50%';
+                spotEl.style.background = spot.status === 'available' ? '#22c55e' : spot.status === 'reserved' ? '#f59e0b' : '#ef4444';
+                spotEl.title = `${parking.name} • ${spot.id}`;
+
+                const spotMarker = new mapboxgl.Marker({ element: spotEl, anchor: 'center' })
+                  .setLngLat([spot.lng, spot.lat])
+                  .addTo(map.current);
+
+                // track spot markers so they can be removed later
+                if (!markersRef.current.spotMarkers) markersRef.current.spotMarkers = [];
+                markersRef.current.spotMarkers.push(spotMarker);
+              }
+            });
+          }
 
           markersRef.current.parkingMarkers.push(marker);
         });
@@ -1644,6 +1680,10 @@ const SecLocation = () => {
     // Supprimer les anciens marqueurs
     markersRef.current.parkingMarkers.forEach((marker) => marker.remove());
     markersRef.current.parkingMarkers = [];
+    if (markersRef.current.spotMarkers) {
+      markersRef.current.spotMarkers.forEach((m) => m.remove());
+      markersRef.current.spotMarkers = [];
+    }
 
     // Ajouter les styles des marqueurs si pas déjà présents
     if (!document.getElementById("marker-styles")) {
@@ -1742,6 +1782,10 @@ const SecLocation = () => {
     return () => {
       markersRef.current.parkingMarkers.forEach((marker) => marker.remove());
       markersRef.current.parkingMarkers = [];
+      if (markersRef.current.spotMarkers) {
+        markersRef.current.spotMarkers.forEach((m) => m.remove());
+        markersRef.current.spotMarkers = [];
+      }
     };
   }, [filteredParkings]);
 
@@ -2003,6 +2047,10 @@ const SecLocation = () => {
       // Supprimer tous les marqueurs de parking existants
       markersRef.current.parkingMarkers.forEach((marker) => marker.remove());
       markersRef.current.parkingMarkers = [];
+      if (markersRef.current.spotMarkers) {
+        markersRef.current.spotMarkers.forEach((m) => m.remove());
+        markersRef.current.spotMarkers = [];
+      }
 
       // Supprimer l'itinéraire s'il existe
       if (map.current.getSource("route")) {
