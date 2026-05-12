@@ -344,10 +344,13 @@ const createReservation = async (reservationData) => {
         const accepted = await updateReservationStatus(reservation._id, 'accepted', null);
         console.log('✅ Reservation auto-accepted:', accepted._id);
         
+        // Get owner ID correctly (it might be an object or string)
+        const ownerId = parking.Owner?._id || parking.Owner || parking.get?.("Owner");
+        
         // Create notification for owner about the approved booking
         await notificationService.createNotificationDirectly({
           driverId: reservationData.userId,
-          ownerId: parking.get("Owner"),
+          ownerId: ownerId,
           parkingId: reservationData.parkingId,
           reservationId: reservation._id,
           status: "acceptée",  // Notify owner that booking was approved
@@ -361,10 +364,13 @@ const createReservation = async (reservationData) => {
       }
     }
 
+    // Get owner ID correctly (it might be an object or string)
+    const ownerId = parking.Owner?._id || parking.Owner || parking.get?.("Owner");
+
     // Create a pending notification for owner approval
     await notificationService.createNotificationDirectly({
       driverId: reservationData.userId,
-      ownerId: parking.get("Owner"),
+      ownerId: ownerId,
       parkingId: reservationData.parkingId,
       reservationId: reservation._id,
       status: "en_attente",  // Request owner approval

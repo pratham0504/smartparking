@@ -92,6 +92,14 @@ exports.getUserNotifications = async (req, res) => {
 // Service function to create notification (used by reservationService and other services)
 const createNotificationDirect = async (notificationData) => {
     try {
+        console.log('📧 Creating notification with data:', {
+            driverId: notificationData.driverId,
+            ownerId: notificationData.ownerId,
+            parkingId: notificationData.parkingId,
+            reservationId: notificationData.reservationId,
+            status: notificationData.status
+        });
+
         // 1. Create notification document
         const newNotification = new Notification({
             driverId: notificationData.driverId,
@@ -103,22 +111,43 @@ const createNotificationDirect = async (notificationData) => {
         });
 
         await newNotification.save();
-        console.log('✅ Notification created:', newNotification._id);
+        console.log('✅ Notification DB record created:', newNotification._id);
 
         // 2. Fetch related data for email
         try {
+            console.log('📥 Fetching owner data for email...');
             const [owner, reservation, parking] = await Promise.all([
                 User.findById(notificationData.ownerId),
                 Reservation.findById(notificationData.reservationId).populate('userId'),
                 Parking.findById(notificationData.parkingId)
             ]);
 
-            if (!owner || !reservation || !parking) {
-                console.warn('⚠️ Missing data for email:', { owner: !!owner, reservation: !!reservation, parking: !!parking });
+            if (!owner) {
+                console.error('❌ Owner not found with ID:', notificationData.ownerId);
+                return newNotification;
+            }
+            if (!reservation) {
+                console.error('❌ Reservation not found with ID:', notificationData.reservationId);
+                return newNotification;
+            }
+            if (!parking) {
+                console.error('❌ Parking not found with ID:', notificationData.parkingId);
                 return newNotification;
             }
 
-            // 3. Send email to owner
+            console.log(`📧 Owner found: ${owner.email} (${owner.name})`);
+            console.log(`🅿️  Parking: ${parking.name}`);
+            console.log(`👤 Driver: ${reservation.userId.email}`);
+
+            // 3. Check email credentials
+            if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+                console.error('❌ Email credentials not configured!');
+                console.error('   EMAIL_USER:', process.env.EMAIL_USER ? '✓ Set' : '✗ Missing');
+                console.error('   EMAIL_PASS:', process.env.EMAIL_PASS ? '✓ Set' : '✗ Missing');
+                return newNotification;
+            }
+
+            // 4. Send email to owner
             const transporter = nodemailer.createTransport({
                 service: 'gmail',
                 secure: true,
@@ -127,6 +156,11 @@ const createNotificationDirect = async (notificationData) => {
                     pass: process.env.EMAIL_PASS
                 }
             });
+
+            // Verify transporter before sending
+            console.log('🔐 Verifying email transporter...');
+            await transporter.verify();
+            console.log('✅ Email transporter verified');
 
             const mailOptions = {
                 from: process.env.EMAIL_USER,
@@ -145,10 +179,19 @@ const createNotificationDirect = async (notificationData) => {
                 )
             };
 
-            await transporter.sendMail(mailOptions);
-            console.log(`✅ Notification email sent to owner: ${owner.email}`);
+            console.log(`📤 Sending email to: ${owner.email}`);
+            const result = await transporter.sendMail(mailOptions);
+            console.log(`✅ Email sent successfully!`);
+            console.log(`   Message ID: ${result.messageId}`);
+            console.log(`   To: ${owner.email}`);
         } catch (emailError) {
-            console.error('⚠️ Error sending notification email:', emailError.message);
+            console.error('⚠️  Error sending notification email:', emailError.message);
+            if (emailError.response) {
+                console.error('   SMTP Response:', emailError.response);
+            }
+            if (emailError.code) {
+                console.error('   Error Code:', emailError.code);
+            }
             // Don't throw - notification was created successfully, email send is secondary
         }
 
