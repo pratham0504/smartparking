@@ -415,3 +415,111 @@ exports.countUnread = async (req, res) => {
         });
     }
 };
+
+// DEBUG: Test email sending
+exports.testEmail = async (req, res) => {
+    try {
+        const { email } = req.body;
+        
+        if (!email) {
+            return res.status(400).json({
+                success: false,
+                message: 'Email is required',
+                test: 'Send POST to /api/notifications/test-email with { "email": "your@email.com" }'
+            });
+        }
+
+        console.log('\n🧪 TEST EMAIL DEBUG 🧪');
+        console.log('=====================================');
+        console.log(`📧 Test email sending to: ${email}`);
+        console.log(`EMAIL_USER: ${process.env.EMAIL_USER ? '✓ Set' : '✗ MISSING'}`);
+        console.log(`EMAIL_PASS: ${process.env.EMAIL_PASS ? '✓ Set' : '✗ MISSING'}`);
+
+        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+            return res.status(500).json({
+                success: false,
+                message: 'Email credentials not configured',
+                debug: {
+                    EMAIL_USER_set: !!process.env.EMAIL_USER,
+                    EMAIL_PASS_set: !!process.env.EMAIL_PASS,
+                    help: 'Add EMAIL_USER and EMAIL_PASS to Render environment variables'
+                }
+            });
+        }
+
+        // Create transporter
+        console.log('🔐 Creating email transporter...');
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            secure: true,
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
+            }
+        });
+
+        // Verify transporter
+        console.log('✓ Verifying transporter...');
+        await transporter.verify();
+        console.log('✓ Transporter verified successfully!');
+
+        // Send test email
+        console.log(`📤 Sending test email to ${email}...`);
+        const result = await transporter.sendMail({
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: '🧪 TEST EMAIL - Parkez System',
+            html: `
+                <h2>Test Email Received! ✅</h2>
+                <p>If you see this, email notifications are working correctly.</p>
+                <p><strong>Sent from:</strong> ${process.env.EMAIL_USER}</p>
+                <p><strong>Sent at:</strong> ${new Date().toLocaleString()}</p>
+                <hr/>
+                <p>You can now test real reservation notifications in the app.</p>
+            `
+        });
+
+        console.log(`✅ Email sent successfully!`);
+        console.log(`   Message ID: ${result.messageId}`);
+        console.log('=====================================\n');
+
+        return res.status(200).json({
+            success: true,
+            message: 'Test email sent successfully!',
+            debug: {
+                to: email,
+                from: process.env.EMAIL_USER,
+                messageId: result.messageId,
+                sentAt: new Date().toISOString(),
+                help: 'Check the email inbox (including spam) for the test email'
+            }
+        });
+
+    } catch (error) {
+        console.error('\n❌ TEST EMAIL ERROR ❌');
+        console.error('=====================================');
+        console.error('Error:', error.message);
+        if (error.code) console.error('Code:', error.code);
+        if (error.response) console.error('Response:', error.response);
+        if (error.command) console.error('SMTP Command:', error.command);
+        console.error('=====================================\n');
+
+        return res.status(500).json({
+            success: false,
+            message: 'Test email failed',
+            error: error.message,
+            code: error.code,
+            debug: {
+                errorType: error.constructor.name,
+                smtpCommand: error.command,
+                help: [
+                    'Check EMAIL_USER and EMAIL_PASS are correct',
+                    'Verify Gmail app password is being used (not regular password)',
+                    'Check 2-Step Verification is enabled on Gmail account',
+                    'Check Render environment variables are saved',
+                    'Service may need to redeploy after env changes'
+                ]
+            }
+        });
+    }
+};

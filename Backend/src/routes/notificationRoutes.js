@@ -20,4 +20,7 @@ router.patch('/:id/read', getUserFromToken, notificationController.markNotificat
 // Route pour marquer toutes les notifications comme lues
 router.patch('/read-all', getUserFromToken, notificationController.markAllNotificationsAsRead);
 
+// DEBUG: Test email endpoint (no auth required for testing)
+router.post('/test-email', notificationController.testEmail);
+
 module.exports = router;
