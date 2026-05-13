@@ -4,28 +4,25 @@
  * Works on both Android and iOS via React Native / Web
  */
 
-import React, { useEffect, useState, useRef } from 'react';
-import { useContext } from 'react';
-import { AuthContext } from '../../../context/AuthContext';
-import io from 'socket.io-client';
+import React, { useEffect, useState, useRef, useCallback, useContext } from 'react';
+import { AuthContext } from '../../../../AuthContext';
 import './MobileCameraTracking.css';
 
 const MobileCameraTracking = ({ reservationId, parkingId, onSpotArrived }) => {
   const [isTracking, setIsTracking] = useState(false);
   const [gpsLocation, setGpsLocation] = useState(null);
   const [cameraActive, setCameraActive] = useState(false);
-  const [gpsSatellites, setGpsSatellites] = useState(0);
   const [accuracy, setAccuracy] = useState(null);
-  const [route, setRoute] = useState([]);
   const [error, setError] = useState(null);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+  const gpsWatchRef = useRef(null);
   const { user } = useContext(AuthContext);
 
   const API_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3001';
 
   // ========== START CAMERA ==========
-  const startCamera = async () => {
+  const startCamera = useCallback(async () => {
     try {
       setError(null);
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -45,25 +42,25 @@ const MobileCameraTracking = ({ reservationId, parkingId, onSpotArrived }) => {
       console.error('[Camera] Error:', err);
       setError(`Camera access denied: ${err.message}`);
     }
-  };
+  }, []);
 
   // ========== STOP CAMERA ==========
-  const stopCamera = () => {
+  const stopCamera = useCallback(() => {
     if (videoRef.current && videoRef.current.srcObject) {
       videoRef.current.srcObject.getTracks().forEach(track => track.stop());
       setCameraActive(false);
       console.log('[Camera] Camera stopped');
     }
-  };
+  }, []);
 
   // ========== GET GPS LOCATION ==========
-  const startGPS = () => {
+  const startGPS = useCallback(() => {
     if (!navigator.geolocation) {
       setError('GPS not available on this device');
       return;
     }
 
-    const watchId = navigator.geolocation.watchPosition(
+    gpsWatchRef.current = navigator.geolocation.watchPosition(
       (position) => {
         const { latitude, longitude, accuracy: acc } = position.coords;
         
@@ -89,12 +86,10 @@ const MobileCameraTracking = ({ reservationId, parkingId, onSpotArrived }) => {
         timeout: 5000
       }
     );
-
-    return watchId;
-  };
+  }, []);
 
   // ========== SEND LOCATION TO BACKEND ==========
-  const sendLocationToBackend = async (latitude, longitude, accuracy) => {
+  const sendLocationToBackend = useCallback(async (latitude, longitude, accuracy) => {
     try {
       const response = await fetch(`${API_URL}/api/car-tracking/location-update`, {
         method: 'POST',
@@ -122,10 +117,10 @@ const MobileCameraTracking = ({ reservationId, parkingId, onSpotArrived }) => {
     } catch (err) {
       console.error('[Backend] Error:', err);
     }
-  };
+  }, [reservationId, parkingId]);
 
   // ========== CAPTURE SNAPSHOT ==========
-  const captureSnapshot = () => {
+  const captureSnapshot = useCallback(() => {
     if (!videoRef.current || !canvasRef.current) return;
 
     const canvas = canvasRef.current;
@@ -141,10 +136,10 @@ const MobileCameraTracking = ({ reservationId, parkingId, onSpotArrived }) => {
     canvas.toBlob((blob) => {
       sendSnapshotToBackend(blob);
     }, 'image/jpeg', 0.8);
-  };
+  }, []);
 
   // ========== SEND SNAPSHOT TO BACKEND ==========
-  const sendSnapshotToBackend = async (blob) => {
+  const sendSnapshotToBackend = useCallback(async (blob) => {
     const formData = new FormData();
     formData.append('file', blob, 'car-location.jpg');
     formData.append('reservationId', reservationId);
@@ -166,22 +161,25 @@ const MobileCameraTracking = ({ reservationId, parkingId, onSpotArrived }) => {
     } catch (err) {
       console.error('[Snapshot] Upload error:', err);
     }
-  };
+  }, [reservationId, parkingId]);
 
   // ========== START TRACKING ==========
-  const handleStartTracking = () => {
+  const handleStartTracking = useCallback(() => {
     setIsTracking(true);
     startCamera();
     startGPS();
     console.log('[Tracking] ▶ Started');
-  };
+  }, []);
 
   // ========== STOP TRACKING ==========
-  const handleStopTracking = () => {
+  const handleStopTracking = useCallback(() => {
     setIsTracking(false);
     stopCamera();
+    if (gpsWatchRef.current) {
+      navigator.geolocation.clearWatch(gpsWatchRef.current);
+    }
     console.log('[Tracking] ⏹ Stopped');
-  };
+  }, []);
 
   // ========== AUTO START ON MOUNT ==========
   useEffect(() => {
@@ -192,7 +190,7 @@ const MobileCameraTracking = ({ reservationId, parkingId, onSpotArrived }) => {
     return () => {
       handleStopTracking();
     };
-  }, [reservationId]);
+  }, [reservationId, handleStartTracking, handleStopTracking]);
 
   // ========== RENDER ==========
   return (
@@ -293,18 +291,11 @@ const MobileCameraTracking = ({ reservationId, parkingId, onSpotArrived }) => {
         </button>
       </div>
 
-      {/* Route Info */}
-      {route.length > 0 && (
-        <div className="route-info">
-          <h3>📍 Route History</h3>
-          <div className="waypoints">
-            {route.slice(-5).map((point, idx) => (
-              <div key={idx} className="waypoint">
-                <span className="number">{idx + 1}</span>
-                <span className="coords">{point.latitude.toFixed(4)}, {point.longitude.toFixed(4)}</span>
-              </div>
-            ))}
-          </div>
+      {/* Real-time Status */}
+      {isTracking && (
+        <div className="realtime-stats">
+          <div className="stat-item">📡 Live GPS Tracking Active</div>
+          <div className="stat-item">🎥 Camera Feed Enabled</div>
         </div>
       )}
     </div>
