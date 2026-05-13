@@ -7,6 +7,7 @@ import axios from "axios";
 import { getBackendUrl } from '../../../utils/backend';
 import { useParams, useNavigate } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
+import MobileCameraTracking from '../MobileCameraTracking/MobileCameraTracking';
 
 // Animations
 const spin = keyframes`
@@ -387,6 +388,8 @@ const ParkingPlan2D = ({
     totalSpots: 0,
     availableSpots: 0,
   });
+  const [reservation, setReservation] = useState(null);
+  const [showTrackingView, setShowTrackingView] = useState(false);
 
   const [parkingSpots, setParkingSpots] = useState([]);
   const [selectedSpotId, setSelectedSpotId] = useState("");
@@ -416,8 +419,26 @@ const ParkingPlan2D = ({
   useEffect(() => {
     if (parkingId) {
       loadParkingData();
+      loadActiveReservation();
     }
   }, [parkingId]);
+
+  const loadActiveReservation = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(
+        `${getBackendUrl()}/api/reservations/active?parkingId=${parkingId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      if (response.data && response.data.length > 0) {
+        setReservation(response.data[0]);
+      }
+    } catch (error) {
+      console.log('No active reservation found');
+    }
+  };
 
   const checkSpotAvailability = async (spot, startDate, endDate) => {
     try {
@@ -1363,62 +1384,100 @@ const ParkingPlan2D = ({
 
   return (
     <ParkingContainer>
-      <ParkingHeader>
-        <div>
-          <ParkingTitle>{parkingInfo.name}</ParkingTitle>
-          <ParkingStats>
-            <span>
-              <strong>Total:</strong> {parkingInfo.totalSpots} spots
-            </span>
-            <span>
-              <strong>Available:</strong> {parkingInfo.availableSpots} spots
-            </span>
-          </ParkingStats>
-        </div>
-
-        <ParkingControls>
-          <ControlButton onClick={zoomOut} title="Zoom Out">
-            <span>🔍</span>
-            <span>−</span>
-          </ControlButton>
-          <ZoomLevel>{Math.round(scale * 100)}%</ZoomLevel>
-          <ControlButton onClick={zoomIn} title="Zoom In">
-            <span>🔍</span>
-            <span>+</span>
-          </ControlButton>
-          <ControlButton onClick={resetView} title="Reset View">
-            <span>🔄</span>
-            <span>Reset</span>
-          </ControlButton>
-        </ParkingControls>
-      </ParkingHeader>
-      <SpotFinder>
-        <SpotFinderInput>
-          <SpotLabel htmlFor="spotLocator">Find your parking spot:</SpotLabel>
-          <SpotInput
-            id="spotLocator"
-            type="text"
-            value={selectedSpotId}
-            onChange={(e) => setSelectedSpotId(e.target.value)}
-            placeholder="Enter spot number (e.g. 42)"
-            ref={inputRef}
-            onKeyPress={(e) => e.key === "Enter" && locateParkingSpot()}
-          />
-          <LocateButton
-            onClick={() => {
-              locateParkingSpot();
+      {showTrackingView && reservation ? (
+        <div style={{ width: '100%', marginBottom: '20px' }}>
+          <button
+            onClick={() => setShowTrackingView(false)}
+            style={{
+              padding: '8px 16px',
+              marginBottom: '10px',
+              backgroundColor: '#34495e',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontWeight: 'bold'
             }}
           >
-            Locate & Reserve
-          </LocateButton>
-        </SpotFinderInput>
+            ← Back to Map
+          </button>
+          <MobileCameraTracking
+            reservationId={reservation._id}
+            parkingId={parkingId}
+            onSpotArrived={() => {
+              console.log('Car arrived at spot!');
+              loadActiveReservation();
+            }}
+          />
+        </div>
+      ) : (
+        <>
+          <ParkingHeader>
+            <div>
+              <ParkingTitle>{parkingInfo.name}</ParkingTitle>
+              <ParkingStats>
+                <span>
+                  <strong>Total:</strong> {parkingInfo.totalSpots} spots
+                </span>
+                <span>
+                  <strong>Available:</strong> {parkingInfo.availableSpots} spots
+                </span>
+              </ParkingStats>
+            </div>
 
-        {searchError && <ErrorMessage>{searchError}</ErrorMessage>}
+            <ParkingControls>
+              <ControlButton onClick={zoomOut} title="Zoom Out">
+                <span>🔍</span>
+                <span>−</span>
+              </ControlButton>
+              <ZoomLevel>{Math.round(scale * 100)}%</ZoomLevel>
+              <ControlButton onClick={zoomIn} title="Zoom In">
+                <span>🔍</span>
+                <span>+</span>
+              </ControlButton>
+              <ControlButton onClick={resetView} title="Reset View">
+                <span>🔄</span>
+                <span>Reset</span>
+              </ControlButton>
+              {reservation && (
+                <ControlButton
+                  onClick={() => setShowTrackingView(true)}
+                  title="Live Tracking"
+                  style={{ backgroundColor: '#e74c3c' }}
+                >
+                  <span>📷</span>
+                  <span>Live Track</span>
+                </ControlButton>
+              )}
+            </ParkingControls>
+          </ParkingHeader>
+          <SpotFinder>
+            <SpotFinderInput>
+              <SpotLabel htmlFor="spotLocator">Find your parking spot:</SpotLabel>
+              <SpotInput
+                id="spotLocator"
+                type="text"
+                value={selectedSpotId}
+                onChange={(e) => setSelectedSpotId(e.target.value)}
+                placeholder="Enter spot number (e.g. 42)"
+                ref={inputRef}
+                onKeyPress={(e) => e.key === "Enter" && locateParkingSpot()}
+              />
+              <LocateButton
+                onClick={() => {
+                  locateParkingSpot();
+                }}
+              >
+                Locate & Reserve
+              </LocateButton>
+            </SpotFinderInput>
 
-        {searchSuccess && <SuccessMessage>{searchSuccess}</SuccessMessage>}
-      </SpotFinder>
-      <DndProvider backend={HTML5Backend}>
-        <ParkingArea
+            {searchError && <ErrorMessage>{searchError}</ErrorMessage>}
+
+            {searchSuccess && <SuccessMessage>{searchSuccess}</SuccessMessage>}
+          </SpotFinder>
+          <DndProvider backend={HTML5Backend}>
+            <ParkingArea
           ref={parkingAreaRef}
           isDragging={isDragging}
           onMouseDown={handleMouseDown}
@@ -1524,18 +1583,18 @@ const ParkingPlan2D = ({
                 isReserved={spot.isReserved}
               />
             ))}
-          </ParkingContent>
+            </ParkingContent>
 
-          {showLogo && <ParkingLogo />}
+            {showLogo && <ParkingLogo />}
 
-          <CoordinatesIndicator>
-            Zoom: {scale.toFixed(2)}x | Position: {Math.round(offset.x)},{" "}
-            {Math.round(offset.y)}
-          </CoordinatesIndicator>
-        </ParkingArea>
-      </DndProvider>
+            <CoordinatesIndicator>
+              Zoom: {scale.toFixed(2)}x | Position: {Math.round(offset.x)},{" "}
+              {Math.round(offset.y)}
+            </CoordinatesIndicator>
+          </ParkingArea>
+          </DndProvider>
 
-      <Legend>
+          <Legend>
         <LegendItem>
           <LegendIcon className="available" />
           <span>Available</span>
@@ -1560,20 +1619,22 @@ const ParkingPlan2D = ({
           <LegendIcon className="exit">S</LegendIcon>
           <span>Exit</span>
         </LegendItem>
-      </Legend>
+          </Legend>
 
-      <Instructions>
-        <h3>How to reserve your spot:</h3>
-        <ol>
-          <li>Enter your preferred parking spot number in the search box</li>
-          <li>Click "Locate & Reserve" to find and reserve it on the map</li>
-          <li>Follow the animated blue path from entry to your selected slot</li>
-        </ol>
-        <Tip>
-          💡 Tip: You can zoom in/out with the buttons or by scrolling, and drag
-          to pan the map
-        </Tip>
-      </Instructions>
+          <Instructions>
+            <h3>How to reserve your spot:</h3>
+            <ol>
+              <li>Enter your preferred parking spot number in the search box</li>
+              <li>Click "Locate & Reserve" to find and reserve it on the map</li>
+              <li>Follow the animated blue path from entry to your selected slot</li>
+            </ol>
+            <Tip>
+              💡 Tip: You can zoom in/out with the buttons or by scrolling, and drag
+              to pan the map. If you have an active reservation, click "Live Track" to see real-time camera tracking!
+            </Tip>
+          </Instructions>
+        </>
+      )}
     </ParkingContainer>
   );
 };
