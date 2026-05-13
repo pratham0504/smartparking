@@ -1,0 +1,346 @@
+/**
+ * Car Tracking Display Styles
+ */
+
+.car-tracking-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  border-radius: 12px;
+  color: white;
+  min-height: 200px;
+}
+
+.car-tracking-container.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+}
+
+.car-tracking-container.loading .spinner {
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid white;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.car-tracking-container.no-tracking {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.car-tracking-container.no-tracking .info-text {
+  text-align: center;
+  font-size: 16px;
+  margin: 0;
+}
+
+/* Tracking Card */
+.tracking-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+  padding: 16px;
+  color: #333;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.tracking-card:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.card-header {
+  border-bottom: 2px solid #667eea;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.card-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* Location Info */
+.location-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.zone-display {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.zone-badge {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 16px;
+  text-align: center;
+}
+
+.zone-badge[data-zone="OUTSIDE"] {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.zone-badge[data-zone="ENTRANCE"] {
+  background-color: #f39c12;
+  color: white;
+}
+
+.zone-badge[data-zone="MIDDLE"] {
+  background-color: #3498db;
+  color: white;
+}
+
+.zone-badge[data-zone="SPOT"] {
+  background-color: #27ae60;
+  color: white;
+  animation: pulse-success 2s ease-in-out infinite;
+}
+
+@keyframes pulse-success {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* Status Grid */
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.status-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  border-left: 3px solid #667eea;
+}
+
+.status-item .label {
+  font-size: 12px;
+  color: #666;
+  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.status-item .value {
+  font-size: 16px;
+  font-weight: 700;
+  color: #333;
+}
+
+.status-item .value.status-arrived {
+  color: #27ae60;
+}
+
+.status-item .value.status-approaching {
+  color: #3498db;
+}
+
+/* Navigation Card */
+.navigation-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.navigation-card .card-header {
+  border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.navigation-card .card-header h3 {
+  color: white;
+}
+
+.navigation-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.direction-arrow {
+  font-size: 48px;
+  font-weight: bold;
+  animation: bounce 1s ease-in-out infinite;
+  margin: 8px 0;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.instruction-text {
+  font-size: 14px;
+  font-weight: 500;
+  margin: 8px 0;
+  line-height: 1.4;
+}
+
+.bearing-info {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.bearing-label {
+  font-size: 12px;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.bearing-value {
+  font-size: 16px;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+/* Progress Bar */
+.progress-container {
+  margin-top: 12px;
+}
+
+.progress-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 8px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #27ae60, #2ecc71);
+  border-radius: 6px;
+  transition: width 0.5s ease;
+  box-shadow: 0 0 8px rgba(46, 204, 113, 0.5);
+}
+
+.progress-text {
+  font-size: 12px;
+  margin-top: 8px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+/* Live Data Display */
+.live-data {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-top: 8px;
+}
+
+.data-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.data-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.data-value {
+  font-size: 13px;
+  font-weight: 500;
+  color: white;
+  font-family: 'Courier New', monospace;
+  word-break: break-all;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .car-tracking-container {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .tracking-card {
+    padding: 12px;
+  }
+
+  .status-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .direction-arrow {
+    font-size: 36px;
+  }
+
+  .live-data {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .car-tracking-container {
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .tracking-card {
+    padding: 10px;
+  }
+
+  .card-header h3 {
+    font-size: 16px;
+  }
+
+  .direction-arrow {
+    font-size: 28px;
+  }
+
+  .progress-container {
+    margin-top: 8px;
+  }
+}

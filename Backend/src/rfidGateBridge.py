@@ -23,6 +23,7 @@ RFID_AUTH_ENDPOINT = f'{BACKEND_URL}/api/rfid/authenticate'
 RFID_EXIT_ENDPOINT = f'{BACKEND_URL}/api/rfid/exit'
 RFID_GATE_EVENTS_ENDPOINT = f'{BACKEND_URL}/api/rfid/gate-events'
 SLOT_HARDWARE_ENDPOINT = f'{BACKEND_URL}/api/slots/hardware'
+CAR_TRACKING_ENDPOINT = f'{BACKEND_URL}/api/car-tracking/location-update'  # Location tracking
 
 # Throttle repeated slot publishes coming from Arduino snapshots (seconds)
 SLOT_THROTTLE_SECONDS = 10
@@ -199,6 +200,37 @@ def parse_slot_message(line):
         log_error(f"Error parsing slot message: {e} -- raw: {line}")
         return None
 
+def parse_location_message(line):
+    """
+    Parse Arduino location tracking message format:
+    LOC:<zone>:DIST:<distance>:SIGNAL:<signalStrength>:ARRIVED:<0|1>
+    
+    Returns dict with zone, distance, signalStrength, arrived or None if invalid
+    """
+    if not line or 'LOC:' not in line:
+        return None
+    
+    try:
+        zone_match = re.search(r'LOC:(\w+)', line)
+        dist_match = re.search(r'DIST:(\d+)', line)
+        signal_match = re.search(r'SIGNAL:(-?\d+)', line)
+        arrived_match = re.search(r'ARRIVED:([01])', line)
+        
+        zone = zone_match.group(1) if zone_match else 'UNKNOWN'
+        distance = int(dist_match.group(1)) if dist_match else 0
+        signal = int(signal_match.group(1)) if signal_match else -100
+        arrived = arrived_match.group(1) == '1' if arrived_match else False
+        
+        return {
+            'zone': zone,
+            'distance': distance,
+            'signalStrength': signal,
+            'arrived': arrived
+        }
+    except Exception as e:
+        log_debug(f"Error parsing location message: {e} -- raw: {line}")
+        return None
+
 # ========== BACKEND COMMUNICATION ==========
 def authenticate_card(card_data):
     """Send card to backend for authentication"""
@@ -323,6 +355,37 @@ def publish_gate_event(event_type, message, card_id=None, reader_id=None, gate_i
         log_error(f"Gate event publish error: {e}")
         return False
 
+def send_location_update(location_data, card_id, reservation_id):
+    """Send real-time car location to backend for tracking"""
+    try:
+        payload = {
+            'cardId': card_id,
+            'reservationId': reservation_id,
+            'parkingId': PARKING_ID,
+            'zone': location_data.get('zone', 'UNKNOWN'),
+            'distance': location_data.get('distance', 0),
+            'signalStrength': location_data.get('signalStrength', -100),
+            'arrived': location_data.get('arrived', False)
+        }
+        
+        response = requests.post(
+            CAR_TRACKING_ENDPOINT,
+            json=payload,
+            timeout=5
+        )
+        
+        result = response.json()
+        if result.get('ok'):
+            log_debug(f"📍 Location update sent: {location_data['zone']} (distance: {location_data['distance']}cm)")
+            return True
+        else:
+            log_debug(f"Location update failed: {result.get('error', 'Unknown')}")
+            return False
+            
+    except Exception as e:
+        log_debug(f"Location update error: {e}")
+        return False
+
 # ========== MAIN BRIDGE LOOP ==========
 def main():
     """Main bridge loop"""
@@ -440,6 +503,18 @@ def main():
                     f"Slot {slot_num} is {'occupied' if slot_data['isOccupied'] else 'free'}"
                 )
                 publish_slot_update(slot_data)
+                continue
+
+            if 'LOC:' in line:
+                # Handle real-time car location tracking
+                location_data = parse_location_message(line)
+                if location_data:
+                    # Try to get active reservation from the current session
+                    # In a full implementation, you would track which card is currently in motion
+                    # For now, send location to all active reservations at this parking
+                    log_debug(f"Location update: {location_data['zone']} (dist: {location_data['distance']}cm)")
+                    # Note: In production, you would correlate this with the current RFID session
+                    # send_location_update(location_data, card_id, reservation_id)
                 continue
 
             if '[GATE]' in line:

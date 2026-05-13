@@ -28,7 +28,7 @@ constexpr byte IR_SENSOR_1_PIN = 8;
 constexpr byte IR_SENSOR_2_PIN = 9;
 
 // ========== SERVO GATE SETTINGS ==========
-constexpr int GATE_OPEN_ANGLE = 180;
+constexpr int GATE_OPEN_ANGLE = 90;
 constexpr int GATE_CLOSED_ANGLE = 0;
 constexpr unsigned long GATE_PULSE_MS = 7000;
 

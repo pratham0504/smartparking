@@ -174,6 +174,7 @@ const cameraRoutes = require('./src/routes/cameraRoutes');
 const fastagRoutes = require('./src/routes/fastagRoutes');
 const passageRoutes = require('./src/routes/passageRoutes');
 const rfidGateRoutes = require('./src/routes/rfidGateRoutes');
+const carTrackingRoutes = require('./src/routes/carTrackingRoutes');
 
 const { register, metricsMiddleware } = require('./src/monitoring');
 const { startReservationExpiryScheduler } = require('./src/services/reservationService');
@@ -242,6 +243,7 @@ app.use('/api/camera', cameraRoutes);
 app.use('/api/fastag', fastagRoutes);
 app.use('/api/passages', passageRoutes);
 app.use('/api/rfid', rfidGateRoutes);
+app.use('/api/car-tracking', carTrackingRoutes);
 
 const demoPath = path.join(__dirname, '../Front-end-Front-Office-/public');
 if (fs.existsSync(demoPath)) {
