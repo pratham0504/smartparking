@@ -1,0 +1,362 @@
+/**
+ * Mobile Camera Tracking Styles
+ */
+
+.mobile-tracking-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #000;
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Status Bar */
+.status-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+  border-bottom: 2px solid #333;
+  z-index: 100;
+}
+
+.status-bar.active {
+  border-bottom-color: #27ae60;
+  background: linear-gradient(135deg, #1a2a1a, #2a3a2a);
+}
+
+.status-indicator {
+  font-size: 16px;
+  font-weight: 700;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.status-bar.active .status-indicator {
+  animation: pulse-red 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+@keyframes pulse-red {
+  0%, 100% { opacity: 1; color: #e74c3c; }
+  50% { opacity: 0.6; }
+}
+
+.status-info {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Error Banner */
+.error-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #e74c3c;
+  color: white;
+  gap: 12px;
+  z-index: 101;
+}
+
+.error-banner button {
+  background: rgba(0, 0, 0, 0.2);
+  border: none;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.error-banner button:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Video Container */
+.video-container {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  background: #000;
+}
+
+.camera-feed {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+}
+
+.camera-feed.active {
+  display: block;
+}
+
+.camera-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+  gap: 16px;
+}
+
+.placeholder-icon {
+  font-size: 64px;
+  opacity: 0.3;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+.camera-placeholder p {
+  color: #666;
+  font-size: 16px;
+  margin: 0;
+}
+
+.hidden-canvas {
+  display: none;
+}
+
+/* Data Overlay */
+.data-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.9) 100%);
+  pointer-events: none;
+}
+
+/* GPS Display */
+.gps-display {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  font-size: 12px;
+}
+
+.gps-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  border-left: 2px solid #3498db;
+}
+
+.gps-item .label {
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 10px;
+}
+
+.gps-item .value {
+  font-weight: 700;
+  color: white;
+  font-family: 'Courier New', monospace;
+}
+
+/* Tracking Status */
+.tracking-status {
+  display: flex;
+  gap: 12px;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-item .icon {
+  font-size: 14px;
+}
+
+/* Control Panel */
+.control-panel {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+  border-top: 1px solid #333;
+  flex-wrap: wrap;
+}
+
+.btn {
+  flex: 1;
+  min-width: 120px;
+  padding: 14px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #2980b9, #1f618d);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+
+.btn-primary.stop {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+
+.btn-primary.stop:hover {
+  background: linear-gradient(135deg, #c0392b, #a93226);
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.btn-secondary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Route Info */
+.route-info {
+  padding: 16px;
+  background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+  border-top: 1px solid #333;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.route-info h3 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #3498db;
+}
+
+.waypoints {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.waypoint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px;
+  background: rgba(52, 152, 219, 0.1);
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.waypoint .number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: #3498db;
+  border-radius: 50%;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.waypoint .coords {
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.8);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .control-panel {
+    padding: 12px;
+  }
+
+  .btn {
+    padding: 12px 12px;
+    font-size: 13px;
+  }
+
+  .gps-display {
+    grid-template-columns: 1fr;
+  }
+
+  .data-overlay {
+    padding: 8px;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .status-bar {
+    padding: 8px 12px;
+    gap: 8px;
+  }
+
+  .status-indicator {
+    font-size: 14px;
+  }
+
+  .control-panel {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .btn {
+    padding: 10px 8px;
+    font-size: 12px;
+    min-width: 100px;
+  }
+
+  .gps-item {
+    padding: 4px;
+  }
+
+  .gps-item .label {
+    font-size: 9px;
+  }
+
+  .gps-item .value {
+    font-size: 11px;
+  }
+}
